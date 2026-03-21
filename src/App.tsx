@@ -52,6 +52,8 @@ const generateUserId = (): string => {
   return userId;
 };
 
+const generateId = () => `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
 const App: React.FC = () => {
   const userIdRef = useRef<string>(generateUserId());
   const [isLoadingData, setIsLoadingData] = useState(true);
@@ -306,7 +308,7 @@ const App: React.FC = () => {
         setSessions(prev => [sessionToSave, ...prev]);
       }
     } else {
-      const newId = Date.now().toString();
+      const newId = generateId();
       setCurrentSessionId(newId);
       
       sessionToSave = {
@@ -350,7 +352,7 @@ const App: React.FC = () => {
         newBookmarks = currentBookmarks.filter(b => !(b.verse.surahNumber === verse.surahNumber && b.verse.ayahNumber === verse.ayahNumber));
       } else {
         const newBookmark: Bookmark = {
-          id: `${verse.surahNumber}-${verse.ayahNumber}-${Date.now()}`,
+          id: `${verse.surahNumber}-${verse.ayahNumber}-${generateId()}`,
           verse,
           dateAdded: Date.now()
         };
@@ -381,14 +383,14 @@ const App: React.FC = () => {
       }
     }
 
-    const userMsg: ChatMessage = { id: Date.now().toString(), type: 'user', content: text };
+    const userMsg: ChatMessage = { id: generateId(), type: 'user', content: text };
     const newMessages = [...messages, userMsg];
     setMessages(newMessages);
 
     try {
       const displayName = settings.username || (settings.email ? settings.email.split('@')[0] : undefined);
       const data = await chatSessionRef.current.sendMessage(text, displayName);
-      const aiMsg: ChatMessage = { id: (Date.now() + 1).toString(), type: 'ai', data: data };
+      const aiMsg: ChatMessage = { id: generateId(), type: 'ai', data: data };
       const finalMessages = [...newMessages, aiMsg];
       setMessages(finalMessages);
       setState(AppState.SUCCESS);
@@ -422,17 +424,17 @@ const App: React.FC = () => {
 
   if (isLoadingData) {
     return (
-      <div className="app-wrapper flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <div className="spin w-8 h-8 border-3 border-[var(--color-primary)] border-t-transparent rounded-full"></div>
-          <p className="text-[var(--color-primary)] font-medium">جاري تحميل البيانات...</p>
+      <div className="app-wrapper royal-gradient flex items-center justify-center">
+        <div className="flex flex-col items-center gap-6 bg-white/10 backdrop-blur-xl p-12 rounded-[3rem] border border-white/20 shadow-2xl">
+          <div className="spin w-12 h-12 border-4 border-[var(--color-gold)] border-t-transparent rounded-full shadow-[0_0_20px_rgba(197,160,89,0.3)]"></div>
+          <p className="text-[var(--color-gold-light)] font-black text-xl tracking-widest animate-pulse">جاري تحميل الأنوار...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="app-wrapper">
+    <div className="app-wrapper royal-gradient selection:bg-[var(--color-gold)] selection:text-white">
       <InstallPrompt />
       
       <AnimatePresence>
@@ -463,27 +465,27 @@ const App: React.FC = () => {
           <motion.div 
             initial={{ y: -20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            className="glass-panel" 
+            className="glass-panel border-b border-white/10 shadow-lg" 
             style={{ 
               position: 'sticky', top: 0, zIndex: 30,
-              borderBottom: '1px solid var(--color-border)', padding: '0.75rem 1.25rem',
+              padding: '0.75rem 1.25rem',
               display: 'flex', justifyContent: 'space-between', alignItems: 'center',
               transition: 'top 0.3s'
             }}
           >
              <div className="flex items-center gap-3">
-               <button onClick={startNewChat} className="btn-ghost btn-icon" style={{ width: 36, height: 36 }} title="الرئيسية">
+               <button onClick={startNewChat} className="btn-ghost btn-icon text-white hover:bg-white/10" style={{ width: 36, height: 36 }} title="الرئيسية">
                  <ArrowRight size={20} />
                </button>
                <div className="flex items-center gap-2">
-                 <div className="w-8 h-8 rounded-full bg-[var(--color-primary)] flex items-center justify-center text-white">
-                    <BookOpen size={16} />
+                 <div className="w-9 h-9 rounded-2xl bg-gradient-to-br from-[var(--color-gold)] to-[var(--color-gold-dark)] flex items-center justify-center text-white shadow-lg">
+                    <BookOpen size={18} />
                  </div>
-                 <h1 className="text-[var(--color-primary-dark)] font-bold text-sm">أنيس القلوب</h1>
+                 <h1 className="royal-text-gradient font-black text-lg">أنيس القلوب</h1>
                </div>
              </div>
              
-             <button onClick={() => setIsSidebarOpen(true)} className="btn-ghost btn-icon" style={{ width: 36, height: 36 }}>
+             <button onClick={() => setIsSidebarOpen(true)} className="btn-ghost btn-icon text-white hover:bg-white/10" style={{ width: 36, height: 36 }}>
                <Menu size={20} />
              </button>
           </motion.div>
@@ -565,10 +567,10 @@ const App: React.FC = () => {
                  </div>
                  
                  <div className="relative z-10">
-                   <h2 className="text-3xl sm:text-4xl font-bold text-[var(--color-primary-dark)] mb-4 tracking-tight leading-tight font-outfit">
+                   <h2 className="text-3xl sm:text-4xl font-black text-white mb-4 tracking-tight leading-tight font-outfit drop-shadow-lg">
                      {getTimeBasedGreeting()} {settings.username ? `، ${settings.username}` : ''}
                    </h2>
-                   <p className="text-[var(--color-text-muted)] text-xl font-sans opacity-90">كيف يمكنني أن أؤنس قلبك اليوم بآيات الله؟</p>
+                    <p className="text-white text-xl font-bold drop-shadow-md">كيف يمكنني أن أؤنس قلبك اليوم بآيات الله؟</p>
                  </div>
                </div>
 
@@ -577,12 +579,30 @@ const App: React.FC = () => {
 
                <div className="my-12">
                  <EmotionForm onSubmit={handleEmotionSubmit} isLoading={false} isOnline={isOnline} variant="centered" />
+                 
+                 <div className="mt-6 flex flex-wrap justify-center gap-2 max-w-2xl mx-auto px-4">
+                   {[
+                     "أشعر بضيق في صدري",
+                     "أريد آيات عن الصبر",
+                     "كيف أتوكل على الله؟",
+                     "أشعر بالقلق من المستقبل",
+                     "آيات تجلب السكينة"
+                   ].map((prompt, idx) => (
+                     <button
+                       key={idx}
+                       onClick={() => handleEmotionSubmit(prompt)}
+                       className="text-xs font-black px-5 py-2.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white hover:border-[var(--color-gold)] hover:text-[var(--color-gold)] transition-all hover:shadow-[0_0_15px_rgba(212,175,55,0.3)] hover:bg-white/20"
+                     >
+                       {prompt}
+                     </button>
+                   ))}
+                 </div>
                </div>
 
                <div className="mt-16 mb-10">
                  <div className="flex items-center gap-3 mb-6 px-2">
                     <div className="h-px flex-1 bg-gradient-to-l from-[var(--color-border)] to-transparent"></div>
-                    <h3 className="text-sm font-bold text-[var(--color-primary)] uppercase tracking-widest">الوصول السريع</h3>
+                    <h3 className="text-sm font-black text-[var(--color-gold)] uppercase tracking-[0.3em] font-outfit drop-shadow-sm">الوصول السريع</h3>
                     <div className="h-px flex-1 bg-gradient-to-r from-[var(--color-border)] to-transparent"></div>
                  </div>
                  

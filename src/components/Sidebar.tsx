@@ -54,40 +54,51 @@ export const Sidebar: React.FC<SidebarProps> = ({
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="relative h-full w-[280px] sm:w-[320px] bg-white shadow-2xl flex flex-col overflow-hidden rounded-l-3xl border-l border-[var(--color-border)]"
+            className="relative h-full w-[280px] sm:w-[320px] bg-[#fdfbf7] shadow-2xl flex flex-col overflow-hidden rounded-l-[2.5rem] border-l border-white/20"
           >
             
             {/* Header */}
-            <div className="p-6 border-b border-[var(--color-border)] flex justify-between items-center bg-[var(--color-primary-light)]">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-[var(--color-primary)] text-white flex items-center justify-center font-bold text-xl shadow-md transform hover:scale-105 transition-transform">
-                  {userInfo.username ? userInfo.username.charAt(0).toUpperCase() : <User size={24} />}
+            <div className="p-8 border-b border-white/10 flex justify-between items-center royal-gradient relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
+                <div className="absolute top-0 left-0 w-32 h-32 bg-white rounded-full blur-[60px] -translate-x-1/2 -translate-y-1/2"></div>
+              </div>
+              
+              <div className="flex items-center gap-4 relative z-10">
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[var(--color-gold)] to-[var(--color-gold-dark)] text-white flex items-center justify-center font-black text-2xl shadow-xl border border-white/20 transform hover:rotate-6 transition-transform">
+                  {userInfo.username ? userInfo.username.charAt(0).toUpperCase() : <User size={28} />}
                 </div>
                 <div>
-                  <p className="font-bold text-[var(--color-primary-dark)] text-base">
+                  <p className="font-black text-white text-lg tracking-wide">
                     {userInfo.username || 'ضيف كريم'}
                   </p>
-                  <p className="text-xs text-[var(--color-primary)] opacity-80 font-medium">
-                    {userInfo.isLoggedIn ? 'متصل' : 'وضع الزائر'}
-                  </p>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <span className={`w-2 h-2 rounded-full ${userInfo.isLoggedIn ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]' : 'bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.5)]'}`}></span>
+                    <p className="text-[10px] text-white/70 font-bold uppercase tracking-widest">
+                      {userInfo.isLoggedIn ? 'متصل' : 'وضع الزائر'}
+                    </p>
+                  </div>
                 </div>
               </div>
-              <button onClick={onClose} className="w-8 h-8 rounded-full bg-white/50 hover:bg-white flex items-center justify-center text-gray-500 hover:text-gray-700 transition-colors shadow-sm">
-                <X size={18} />
+              <button onClick={onClose} className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all shadow-inner border border-white/10 relative z-10">
+                <X size={20} />
               </button>
             </div>
 
             {/* Menu Items */}
-            <div className="flex-1 overflow-y-auto py-4 px-3 flex flex-col gap-1 custom-scrollbar">
+            <div className="flex-1 overflow-y-auto py-6 px-4 flex flex-col gap-2 custom-scrollbar">
               
               <SidebarItem 
-                icon={<PlusCircle size={20} />} 
+                icon={<PlusCircle size={22} />} 
                 label="موضوع جديد" 
                 onClick={() => { onNewChat(); onClose(); }} 
                 primary
               />
 
-              <div className="my-2 border-t border-[var(--color-border)] mx-2 opacity-50"></div>
+              <div className="my-4 flex items-center gap-3 px-2">
+                <div className="h-px flex-1 bg-gradient-to-l from-[var(--color-gold)]/30 to-transparent"></div>
+                <span className="text-[10px] font-black text-[var(--color-gold-dark)] uppercase tracking-[0.2em]">الخدمات</span>
+                <div className="h-px flex-1 bg-gradient-to-r from-[var(--color-gold)]/30 to-transparent"></div>
+              </div>
 
               <SidebarItem 
                 icon={<History size={20} />} 
@@ -101,7 +112,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 onClick={() => { onOpenBookmarks(); onClose(); }} 
               />
 
-              <div className="my-2 border-t border-[var(--color-border)] mx-2 opacity-50"></div>
+              <div className="my-4 flex items-center gap-3 px-2">
+                <div className="h-px flex-1 bg-gradient-to-l from-[var(--color-gold)]/30 to-transparent"></div>
+                <span className="text-[10px] font-black text-[var(--color-gold-dark)] uppercase tracking-[0.2em]">الأدوات</span>
+                <div className="h-px flex-1 bg-gradient-to-r from-[var(--color-gold)]/30 to-transparent"></div>
+              </div>
 
               <SidebarItem 
                 icon={<SunMoon size={20} />} 
@@ -133,7 +148,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 onClick={() => { onOpenTasbih(); onClose(); }} 
               />
 
-              <div className="my-2 border-t border-[var(--color-border)] mx-2 opacity-50"></div>
+              <div className="my-4 flex items-center gap-3 px-2">
+                <div className="h-px flex-1 bg-gradient-to-l from-[var(--color-gold)]/30 to-transparent"></div>
+                <span className="text-[10px] font-black text-[var(--color-gold-dark)] uppercase tracking-[0.2em]">المزيد</span>
+                <div className="h-px flex-1 bg-gradient-to-r from-[var(--color-gold)]/30 to-transparent"></div>
+              </div>
 
               <SidebarItem 
                 icon={<Settings size={20} />} 
@@ -179,16 +198,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
 const SidebarItem = ({ icon, label, onClick, primary = false }: { icon: React.ReactNode, label: string, onClick: () => void, primary?: boolean }) => (
   <button 
-    className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300 group border ${
+    className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition-all duration-300 group border ${
       primary 
-        ? 'bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary-dark)] text-white border-transparent shadow-md hover:shadow-lg hover:-translate-y-0.5' 
-        : 'bg-white text-gray-700 border-[var(--color-border)] hover:border-[var(--color-primary)] hover:shadow-md hover:-translate-y-0.5'
+        ? 'bg-gradient-to-r from-[var(--color-gold)] to-[var(--color-gold-dark)] text-white border-transparent shadow-lg hover:shadow-xl hover:-translate-y-0.5' 
+        : 'bg-white text-gray-700 border-gray-100 hover:border-[var(--color-gold)]/30 hover:shadow-md hover:-translate-y-0.5'
     }`}
     onClick={onClick}
   >
-    <div className={`p-2 rounded-xl transition-colors ${primary ? 'bg-white/20 text-white' : 'bg-[var(--color-primary-light)] text-[var(--color-primary)] group-hover:bg-[var(--color-primary)] group-hover:text-white'}`}>
-      {icon}
+    <div className={`p-2.5 rounded-xl transition-all duration-300 ${primary ? 'bg-white/20 text-white' : 'bg-[var(--color-gold)]/10 text-[var(--color-gold-dark)] group-hover:bg-gradient-to-br group-hover:from-[var(--color-gold)] group-hover:to-[var(--color-gold-dark)] group-hover:text-white group-hover:shadow-md'}`}>
+      {React.cloneElement(icon as React.ReactElement, { size: 20 })}
     </div>
-    <span className="font-bold text-sm">{label}</span>
+    <span className="font-black text-sm tracking-wide">{label}</span>
   </button>
 );

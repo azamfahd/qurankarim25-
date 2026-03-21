@@ -1,19 +1,79 @@
-import React from 'react';
-import { Clock } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Clock, MapPin } from 'lucide-react';
+import { Coordinates, CalculationMethod, PrayerTimes, SunnahTimes } from 'adhan';
 
 export const PrayerTimesWidget: React.FC = () => {
+  const [prayerTimes, setPrayerTimes] = useState<PrayerTimes | null>(null);
+  const [locationName, setLocationName] = useState<string>('جاري التحديد...');
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          const coords = new Coordinates(latitude, longitude);
+          const params = CalculationMethod.MuslimWorldLeague();
+          const date = new Date();
+          const times = new PrayerTimes(coords, date, params);
+          setPrayerTimes(times);
+          
+          // Simple reverse geocoding or just use coordinates
+          setLocationName('موقعك الحالي');
+        },
+        (error) => {
+          console.error("Geolocation error:", error);
+          // Default to Makkah if blocked
+          const coords = new Coordinates(21.4225, 39.8262);
+          const params = CalculationMethod.MuslimWorldLeague();
+          const date = new Date();
+          const times = new PrayerTimes(coords, date, params);
+          setPrayerTimes(times);
+          setLocationName('مكة المكرمة');
+        }
+      );
+    }
+  }, []);
+
+  const formatTime = (date: Date) => {
+    return date.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit', hour12: true });
+  };
+
+  if (!prayerTimes) return null;
+
+  const times = [
+    { name: 'الفجر', time: formatTime(prayerTimes.fajr) },
+    { name: 'الظهر', time: formatTime(prayerTimes.dhuhr) },
+    { name: 'العصر', time: formatTime(prayerTimes.asr) },
+    { name: 'المغرب', time: formatTime(prayerTimes.maghrib) },
+    { name: 'العشاء', time: formatTime(prayerTimes.isha) },
+  ];
+
   return (
-    <div className="bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary-light)] rounded-2xl p-6 text-white shadow-md">
-      <div className="flex items-center gap-2 mb-4">
-        <Clock size={20} />
-        <h3 className="font-bold">مواقيت الصلاة</h3>
+    <div className="bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-dark)] rounded-3xl p-6 text-white shadow-lg border border-white/10 relative overflow-hidden group">
+      <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
+         <div className="absolute top-0 right-0 w-32 h-32 bg-white rounded-full blur-[60px] translate-x-1/2 -translate-y-1/2"></div>
       </div>
-      <div className="flex justify-between items-center">
-        <div className="text-center"><p className="text-xs opacity-80">الفجر</p><p className="font-bold">04:30</p></div>
-        <div className="text-center"><p className="text-xs opacity-80">الظهر</p><p className="font-bold">12:15</p></div>
-        <div className="text-center"><p className="text-xs opacity-80">العصر</p><p className="font-bold">15:45</p></div>
-        <div className="text-center"><p className="text-xs opacity-80">المغرب</p><p className="font-bold">18:30</p></div>
-        <div className="text-center"><p className="text-xs opacity-80">العشاء</p><p className="font-bold">20:00</p></div>
+      
+      <div className="flex justify-between items-center mb-6 relative z-10">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-white/20 rounded-xl backdrop-blur-md border border-white/10">
+            <Clock size={20} />
+          </div>
+          <h3 className="font-bold text-lg">مواقيت الصلاة</h3>
+        </div>
+        <div className="flex items-center gap-1.5 text-[10px] bg-white/10 px-2 py-1 rounded-full border border-white/10">
+          <MapPin size={10} />
+          <span>{locationName}</span>
+        </div>
+      </div>
+      
+      <div className="grid grid-cols-5 gap-2 relative z-10">
+        {times.map((t, idx) => (
+          <div key={idx} className="flex flex-col items-center gap-1 bg-white/5 hover:bg-white/10 p-2 rounded-2xl transition-colors border border-white/5">
+            <p className="text-[10px] opacity-70 font-medium">{t.name}</p>
+            <p className="font-bold text-xs sm:text-sm">{t.time}</p>
+          </div>
+        ))}
       </div>
     </div>
   );

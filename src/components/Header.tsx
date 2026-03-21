@@ -29,23 +29,23 @@ const Header = React.memo<HeaderProps>(({ onOpenSidebar, onOpenSettings, usernam
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-[var(--color-border)] px-4 py-3 flex items-center justify-between shadow-sm"
+      className="sticky top-0 z-40 bg-white/10 backdrop-blur-xl border-b border-white/10 px-4 py-3 flex items-center justify-between shadow-lg"
     >
       <div className="flex items-center gap-4">
         <button 
           onClick={onOpenSidebar}
-          className="p-2.5 hover:bg-[var(--color-primary-light)] hover:text-[var(--color-primary-dark)] rounded-2xl transition-all text-gray-500 shadow-sm border border-transparent hover:border-[var(--color-primary)]/20"
+          className="p-2.5 bg-white/10 hover:bg-white/20 text-white rounded-2xl transition-all shadow-sm border border-white/10"
           aria-label="القائمة"
         >
           <Menu size={22} />
         </button>
         <div className="flex flex-col">
           <div className="flex items-center gap-2">
-            <Moon size={16} className="text-[var(--color-primary)]" />
-            <h1 className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary-dark)] leading-tight tracking-tight">أنيس القلوب</h1>
+            <Moon size={16} className="text-[var(--color-gold)]" />
+            <h1 className="text-xl font-black royal-text-gradient leading-tight tracking-tight">أنيس القلوب</h1>
           </div>
-          <div className="flex items-center gap-1.5 text-[10px] text-gray-400 font-semibold mt-0.5">
-            <Calendar size={10} className="text-[var(--color-primary)]/60" />
+          <div className="flex items-center gap-1.5 text-[10px] text-[var(--color-gold-light)] font-semibold mt-0.5 opacity-80">
+            <Calendar size={10} className="text-[var(--color-gold)]" />
             <span>{hijriDate}</span>
           </div>
         </div>
@@ -54,10 +54,10 @@ const Header = React.memo<HeaderProps>(({ onOpenSidebar, onOpenSettings, usernam
       <div className="flex items-center gap-2">
         <button 
           onClick={onOpenSettings}
-          className="group flex items-center gap-3 pl-2 pr-1 py-1 bg-gray-50 hover:bg-white border border-[var(--color-border)] hover:border-[var(--color-primary)]/30 rounded-full transition-all shadow-sm hover:shadow-md"
+          className="group flex items-center gap-3 pl-2 pr-1 py-1 bg-white/10 hover:bg-white/20 border border-white/10 rounded-full transition-all shadow-sm hover:shadow-md"
         >
-          <span className="text-sm font-bold text-gray-700 group-hover:text-[var(--color-primary)] transition-colors hidden sm:block pr-2">{username || 'ضيف'}</span>
-          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[var(--color-primary-light)] to-white border border-[var(--color-primary)]/20 flex items-center justify-center text-[var(--color-primary)] shadow-inner group-hover:scale-105 transition-transform">
+          <span className="text-sm font-bold text-white group-hover:text-[var(--color-gold-light)] transition-colors hidden sm:block pr-2">{username || 'ضيف'}</span>
+          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[var(--color-gold)] to-[var(--color-gold-dark)] border border-white/20 flex items-center justify-center text-white shadow-lg group-hover:scale-105 transition-transform">
             <User size={18} />
           </div>
         </button>
