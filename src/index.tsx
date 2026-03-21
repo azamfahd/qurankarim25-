@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import './globals.css';
+import './index.css';
 
 // Register Service Worker for Offline Capabilities
 if ('serviceWorker' in navigator) {
