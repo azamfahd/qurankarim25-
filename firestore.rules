@@ -1,0 +1,85 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: users
+    // Document ID: userId (UID)
+    // Fields:
+    //   - uid: string (required) - The unique ID of the user
+    //   - username: string (required, size < 50) - The display name of the user
+    //   - email: string (optional, email format) - The email of the user
+    //   - reciter: string (optional) - Preferred reciter ID
+    //   - model: string (optional) - Preferred Gemini model
+    //   - creativityLevel: number (optional, 0-1) - AI creativity level
+    //   - apiKey: string (optional, size < 200) - Optional custom API key
+    //   - lastUpdated: string (optional, ISO 8601) - When the settings were last updated
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    function isValidDateString(dateStr) {
+      return dateStr is string && dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.*Z?$");
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    function isValidUser(data) {
+      return hasOnlyAllowedFields(['uid', 'username', 'email', 'photoURL', 'reciter', 'model', 'creativityLevel', 'apiKey', 'lastUpdated']) &&
+             data.uid is string && data.uid == request.auth.uid &&
+             data.username is string && data.username.size() > 0 && data.username.size() < 50 &&
+             (!('email' in data) || isValidEmail(data.email)) &&
+             (!('photoURL' in data) || (data.photoURL is string && data.photoURL.size() < 500)) &&
+             (!('apiKey' in data) || (data.apiKey is string && data.apiKey.size() < 200)) &&
+             (!('creativityLevel' in data) || (data.creativityLevel is number && data.creativityLevel >= 0 && data.creativityLevel <= 1)) &&
+             (!('lastUpdated' in data) || isValidDateString(data.lastUpdated));
+    }
+
+    function isValidSession(data) {
+      return hasOnlyAllowedFields(['id', 'date', 'preview', 'messages']) &&
+             data.id is string && data.date is number && data.preview is string && data.messages is list;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+          (request.auth.token.email == "azamfahd25@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId) && isValidUser(request.resource.data);
+      allow update: if isOwner(userId) && isValidUser(request.resource.data);
+      allow delete: if isAdmin();
+
+      match /sessions/{sessionId} {
+        allow read: if isOwner(userId) || isAdmin();
+        allow create: if isOwner(userId) && isValidSession(request.resource.data);
+        allow update: if isOwner(userId) && isValidSession(request.resource.data);
+        allow delete: if isOwner(userId) || isAdmin();
+      }
+    }
+
+    match /{path=**} {
+      allow read, write: if false;
+    }
+  }
+}

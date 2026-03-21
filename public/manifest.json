@@ -1,0 +1,17 @@
+{
+  "name": "أنيس القلوب",
+  "short_name": "أنيس القلوب",
+  "description": "رفيقك القرآني للتدبر والمواساة",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fcfbf7",
+  "theme_color": "#065f46",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/app-icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png"
+    }
+  ]
+}
