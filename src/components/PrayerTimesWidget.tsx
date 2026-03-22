@@ -49,7 +49,7 @@ export const PrayerTimesWidget: React.FC = () => {
   ];
 
   return (
-    <div className="bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-dark)] rounded-3xl p-6 text-white shadow-lg border border-white/10 relative overflow-hidden group">
+    <div className="bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-dark)] rounded-3xl p-6 text-white shadow-lg border border-white/10 relative overflow-hidden group h-full flex flex-col justify-between">
       <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
          <div className="absolute top-0 right-0 w-32 h-32 bg-white rounded-full blur-[60px] translate-x-1/2 -translate-y-1/2"></div>
       </div>

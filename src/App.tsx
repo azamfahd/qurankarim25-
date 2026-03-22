@@ -586,8 +586,10 @@ const App: React.FC = () => {
                  </div>
                </div>
 
-               <PrayerTimesWidget />
-               <DailyVerse />
+               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 my-8">
+                 <PrayerTimesWidget />
+                 <DailyVerse />
+               </div>
 
                <div className="my-12">
                  <EmotionForm onSubmit={handleEmotionSubmit} isLoading={false} isOnline={isOnline} variant="centered" />
