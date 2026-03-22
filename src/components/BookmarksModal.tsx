@@ -10,6 +10,7 @@ interface BookmarksModalProps {
   onRemoveBookmark: (id: string) => void;
   isOnline: boolean;
   reciter?: string;
+  onShowToast: (message: string, type?: 'success' | 'error' | 'info') => void;
 }
 
 export const BookmarksModal: React.FC<BookmarksModalProps> = ({ 
@@ -18,7 +19,8 @@ export const BookmarksModal: React.FC<BookmarksModalProps> = ({
   bookmarks, 
   onRemoveBookmark,
   isOnline,
-  reciter = 'ar.alafasy'
+  reciter = 'ar.alafasy',
+  onShowToast
 }) => {
   const [playingId, setPlayingId] = React.useState<string | null>(null);
   const audioRef = React.useRef<HTMLAudioElement | null>(null);
@@ -34,7 +36,7 @@ export const BookmarksModal: React.FC<BookmarksModalProps> = ({
 
   const toggleAudio = async (bookmark: Bookmark) => {
     if (!isOnline) {
-      alert("عذراً، التشغيل الصوتي يتطلب اتصالاً بالإنترنت.");
+      onShowToast("عذراً، التشغيل الصوتي يتطلب اتصالاً بالإنترنت.", 'info');
       return;
     }
 
@@ -92,7 +94,7 @@ export const BookmarksModal: React.FC<BookmarksModalProps> = ({
             }
           }
           setPlayingId(null);
-          alert("عذراً، فشل تحميل التلاوة. قد يكون الرابط غير متاح حالياً.");
+          onShowToast("عذراً، فشل تحميل التلاوة. قد يكون الرابط غير متاح حالياً.", 'error');
         };
 
         try {
@@ -106,7 +108,7 @@ export const BookmarksModal: React.FC<BookmarksModalProps> = ({
 
       const initialUrl = await getAudioUrl(reciter, bookmark.verse.surahNumber, bookmark.verse.ayahNumber);
       if (!initialUrl) {
-        alert("عذراً، لم نتمكن من العثور على رابط التلاوة لهذا القارئ.");
+        onShowToast("عذراً، لم نتمكن من العثور على رابط التلاوة لهذا القارئ.", 'error');
         return;
       }
       
@@ -117,7 +119,7 @@ export const BookmarksModal: React.FC<BookmarksModalProps> = ({
   const handleCopy = (bookmark: Bookmark) => {
     const text = `${bookmark.verse.arabicText} ﴿${bookmark.verse.ayahNumber}﴾\n[سورة ${bookmark.verse.surahName}]\n\n- عبر تطبيق أنيس القلوب`;
     navigator.clipboard.writeText(text);
-    alert('تم نسخ الآية');
+    onShowToast('تم نسخ الآية', 'success');
   };
 
   const handleShare = async (bookmark: Bookmark) => {
@@ -133,7 +135,7 @@ export const BookmarksModal: React.FC<BookmarksModalProps> = ({
       }
     } else {
       navigator.clipboard.writeText(text);
-      alert('تم نسخ النص للمشاركة');
+      onShowToast('تم نسخ النص للمشاركة', 'success');
     }
   };
 

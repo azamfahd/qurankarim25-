@@ -16,6 +16,7 @@ interface SidebarProps {
   onOpenQibla: () => void;
   onOpenZakat: () => void;
   userInfo: UserSettings;
+  onShowToast: (message: string, type?: 'success' | 'error' | 'info') => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ 
@@ -30,7 +31,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onOpenNamesOfAllah,
   onOpenQibla,
   onOpenZakat,
-  userInfo
+  userInfo,
+  onShowToast
 }) => {
   return (
     <AnimatePresence>
@@ -172,7 +174,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     });
                   } else {
                     navigator.clipboard.writeText(window.location.origin);
-                    alert('تم نسخ رابط التطبيق');
+                    onShowToast('تم نسخ رابط التطبيق بنجاح', 'success');
                   }
                   onClose();
                 }} 

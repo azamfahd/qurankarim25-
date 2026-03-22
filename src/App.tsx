@@ -9,6 +9,7 @@ import { TasbihModal } from './components/TasbihModal';
 import { BookmarksModal } from './components/BookmarksModal';
 import { AdhkarModal } from './components/AdhkarModal';
 import { NamesOfAllahModal } from './components/NamesOfAllahModal';
+import { Toast, ToastType } from './components/Toast';
 import { Sidebar } from './components/Sidebar';
 import { DailyVerse } from './components/DailyVerse';
 import { PrayerTimesWidget } from './components/PrayerTimesWidget';
@@ -91,6 +92,16 @@ const App: React.FC = () => {
   const [isQiblaOpen, setIsQiblaOpen] = useState(false);
   const [isZakatOpen, setIsZakatOpen] = useState(false);
   const [loadingText, setLoadingText] = useState(LOADING_MESSAGES[0]);
+
+  const [toast, setToast] = useState<{ message: string, type: ToastType, isVisible: boolean }>({
+    message: '',
+    type: 'info',
+    isVisible: false
+  });
+
+  const showToast = (message: string, type: ToastType = 'info') => {
+    setToast({ message, type, isVisible: true });
+  };
 
   const [sessions, setSessions] = useState<ChatSession[]>(() => {
     try {
@@ -521,6 +532,7 @@ const App: React.FC = () => {
                          bookmarks={settings.bookmarks || []}
                          onToggleBookmark={handleToggleBookmark}
                          reciter={settings.reciter}
+                         onShowToast={showToast}
                        />
                     </div>
                   )
@@ -676,6 +688,7 @@ const App: React.FC = () => {
         onOpenQibla={() => setIsQiblaOpen(true)}
         onOpenZakat={() => setIsZakatOpen(true)}
         userInfo={settings}
+        onShowToast={showToast}
       />
 
       <TasbihModal 
@@ -715,6 +728,7 @@ const App: React.FC = () => {
         }}
         isOnline={isOnline}
         reciter={settings.reciter}
+        onShowToast={showToast}
       />
 
       <SettingsModal 
@@ -722,6 +736,7 @@ const App: React.FC = () => {
         onClose={() => setIsSettingsOpen(false)}
         settings={settings}
         onSave={setSettings}
+        onShowToast={showToast}
       />
 
       <HistoryModal
@@ -752,6 +767,13 @@ const App: React.FC = () => {
             });
           }
         }}
+      />
+
+      <Toast 
+        message={toast.message} 
+        type={toast.type} 
+        isVisible={toast.isVisible} 
+        onClose={() => setToast(prev => ({ ...prev, isVisible: false }))} 
       />
     </div>
   );

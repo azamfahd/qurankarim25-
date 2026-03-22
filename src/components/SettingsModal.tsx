@@ -10,9 +10,10 @@ interface SettingsModalProps {
   onClose: () => void;
   settings: UserSettings;
   onSave: (settings: UserSettings) => void;
+  onShowToast: (message: string, type?: 'success' | 'error' | 'info') => void;
 }
 
-export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, settings, onSave }) => {
+export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, settings, onSave, onShowToast }) => {
   const [localSettings, setLocalSettings] = useState<UserSettings>({ ...settings });
 
   const handleSave = () => {
@@ -157,7 +158,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, s
                   <button
                     onClick={() => {
                       if (!getSupabase()) {
-                        alert("يرجى إعداد مفاتيح Supabase في إعدادات الأسرار (Secrets) أولاً لتفعيل الخيار الأساسي.");
+                        onShowToast("يرجى إعداد مفاتيح Supabase في إعدادات الأسرار (Secrets) أولاً لتفعيل الخيار الأساسي.", 'info');
                         return;
                       }
                       setLocalSettings({ ...localSettings, preferredBackend: 'supabase' });

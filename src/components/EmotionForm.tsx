@@ -20,7 +20,7 @@ export const EmotionForm: React.FC<EmotionFormProps> = ({ onSubmit, isLoading, i
   };
 
   return (
-    <form onSubmit={handleSubmit} className={`flex items-center gap-3 ${variant === 'centered' ? 'max-w-2xl mx-auto' : 'w-full'}`}>
+    <form onSubmit={handleSubmit} className={`flex items-center gap-3 ${variant === 'centered' ? 'max-w-3xl mx-auto' : 'w-full'}`}>
       <div className="relative flex-1 group">
         <div className="absolute -inset-0.5 bg-gradient-to-r from-[var(--color-gold)] to-[var(--color-gold-dark)] rounded-full blur opacity-20 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
         <input
