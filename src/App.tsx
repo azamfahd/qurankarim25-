@@ -514,24 +514,24 @@ const App: React.FC = () => {
            />
         )}
         
-        <main className="container" style={{ 
+        <main className={isChatStarted ? "w-full max-w-[1600px] mx-auto px-0 sm:px-4 flex flex-col" : "container flex flex-col"} style={{ 
             flexGrow: 1, 
             paddingBottom: isChatStarted ? '140px' : '2rem', 
-            paddingTop: '1rem' 
+            paddingTop: isChatStarted ? '0' : '1rem' 
         }}>
           
-          <div className="flex flex-col gap-6">
-            {messages.map((msg) => (
-              <div key={msg.id} className={`message-row ${msg.type}`}>
+          <div className="flex flex-col gap-6 flex-1">
+            {messages.map((msg, index) => (
+              <div key={msg.id} className={`message-row ${msg.type} ${index === messages.length - 1 && msg.type === 'ai' ? 'flex-1 flex-col' : ''}`}>
                 {msg.type === 'user' ? (
-                  <div className="flex justify-end w-full animate-fade-in">
+                  <div className="flex justify-end w-full animate-fade-in px-4 sm:px-0 mt-4">
                     <div className="chat-bubble">
                       {msg.content}
                     </div>
                   </div>
                 ) : (
                   msg.data && (
-                    <div className="w-full">
+                    <div className="w-full h-full flex flex-col flex-1">
                        <ResultCard 
                          data={msg.data} 
                          isOnline={isOnline} 

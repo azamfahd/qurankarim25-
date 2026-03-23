@@ -243,7 +243,7 @@ const VerseSection: React.FC<{
                 transition={{ duration: 0.3 }}
                 className="bg-white rounded-2xl p-5 sm:p-8 border border-gray-100 shadow-sm"
               >
-                <p className="text-gray-700 leading-relaxed text-base sm:text-lg text-justify">
+                <p className="explanation-text text-gray-700 text-base sm:text-lg text-justify">
                   {verse.tafsir}
                 </p>
               </motion.div>
@@ -256,7 +256,7 @@ const VerseSection: React.FC<{
                 transition={{ duration: 0.3 }}
                 className="bg-gradient-to-br from-[var(--color-primary-light)]/5 to-transparent rounded-2xl p-5 sm:p-8 border border-[var(--color-primary)]/10 shadow-sm"
               >
-                <p className="text-gray-800 leading-relaxed text-base sm:text-lg text-justify font-medium">
+                <p className="explanation-text text-gray-800 text-base sm:text-lg text-justify font-medium">
                   {verse.tadabbur}
                 </p>
               </motion.div>
@@ -277,12 +277,12 @@ export const ResultCard: React.FC<{
   onShowToast: (message: string, type?: 'success' | 'error' | 'info') => void;
 }> = ({ data, isOnline = true, bookmarks = [], onToggleBookmark = () => {}, reciter, onShowToast }) => {
   return (
-    <div className="w-full max-w-5xl mx-auto pb-16 px-3 sm:px-6 lg:px-8">
+    <div className="w-full h-full mx-auto px-0 sm:px-2 flex flex-col flex-1">
       <motion.div 
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className="bg-white/95 backdrop-blur-xl rounded-3xl md:rounded-[2.5rem] shadow-2xl border border-white/60 overflow-hidden flex flex-col"
+        className="bg-white/95 backdrop-blur-xl sm:rounded-3xl md:rounded-[2.5rem] shadow-2xl sm:border border-white/60 overflow-hidden flex flex-col flex-1 min-h-[calc(100vh-160px)]"
       >
         
         {/* 1. Header & Intro */}
@@ -296,7 +296,7 @@ export const ResultCard: React.FC<{
                </div>
                <span className="text-sm font-bold text-gray-800">رسالة مخصصة لك</span>
             </div>
-            <p className="text-gray-800 leading-relaxed text-base sm:text-lg md:text-xl text-justify font-medium">
+            <p className="explanation-text text-gray-800 text-base sm:text-lg md:text-xl text-justify font-medium">
                {data.introMessage}
             </p>
           </div>
@@ -350,7 +350,7 @@ export const ResultCard: React.FC<{
                 <CopyButton text={data.tafakkur} label="نسخ التفكر" />
               </div>
             </div>
-            <p className="text-gray-700 leading-relaxed text-base sm:text-lg text-justify font-medium relative z-10">
+            <p className="explanation-text text-gray-700 text-base sm:text-lg text-justify font-medium relative z-10">
               {data.tafakkur}
             </p>
           </div>
@@ -358,7 +358,7 @@ export const ResultCard: React.FC<{
 
         {/* 4. Summary Section */}
         {data.summary && (
-          <div className="p-6 sm:p-8 md:p-12 bg-gradient-to-br from-[var(--color-primary-dark)] to-[#022c22] text-white relative overflow-hidden">
+          <div className="p-6 sm:p-8 md:p-12 bg-gradient-to-br from-[var(--color-primary-dark)] to-[#022c22] text-white relative overflow-hidden flex-1 flex flex-col justify-center">
             <div className="absolute top-0 right-0 w-full h-full opacity-10 pointer-events-none">
                <div className="absolute bottom-0 right-0 w-48 h-48 sm:w-64 sm:h-64 bg-[var(--color-gold)] rounded-full blur-[80px] translate-x-1/3 translate-y-1/3"></div>
             </div>
@@ -370,7 +370,7 @@ export const ResultCard: React.FC<{
               <h3 className="text-base sm:text-lg font-bold text-[var(--color-gold-light)]">الخلاصة</h3>
             </div>
             
-            <p className="text-white/90 leading-relaxed text-base sm:text-lg md:text-xl relative z-10 font-medium text-justify italic">
+            <p className="explanation-text text-white/90 text-base sm:text-lg md:text-xl relative z-10 font-medium text-justify italic">
               "{data.summary}"
             </p>
           </div>
