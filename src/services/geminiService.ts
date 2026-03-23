@@ -166,19 +166,19 @@ export class QuranChatSession {
             properties: {
               surahNumber: { type: Type.INTEGER },
               ayahNumber: { type: Type.INTEGER },
-              tafsir: { type: Type.STRING, description: "التفسير: A brief and accurate interpretation of the verse in Arabic." },
-              tadabbur: { type: Type.STRING, description: "التدبر: A creative, deep, and context-specific spiritual reflection in Arabic connecting the verse to the user's situation." },
+              tafsir: { type: Type.STRING, description: "التفسير: A comprehensive, accurate, and easy-to-understand interpretation of the verse in Arabic. Do not artificially limit the length; provide as much detail as needed to fully explain the meaning." },
+              tadabbur: { type: Type.STRING, description: "التدبر: A creative, deep, and context-specific spiritual reflection in Arabic connecting the verse to the user's situation. Expand on the reflection if the topic requires it." },
             },
           },
-          description: "A list of 1-3 relevant Quranic verse mappings (Surah and Ayah numbers).",
+          description: "A list of relevant Quranic verse mappings (Surah and Ayah numbers). Provide as many verses as are highly relevant to the user's question or situation (e.g., 1 to 7 verses, or more if necessary). Do not restrict to just 1-3 if more context is needed.",
         },
         tafakkur: {
           type: Type.STRING,
-          description: "التفكر: A deep thought, reflection, or practical advice based on the verses and the user's situation.",
+          description: "التفكر: A deep thought, reflection, or practical advice based on the verses and the user's situation. Provide a thorough and expansive explanation, summarizing the core message without artificial length limits.",
         },
         summary: {
           type: Type.STRING,
-          description: "خلاصة احترافية وسهلة الفهم تجمع أهم النقاط التي تم تناولها في الرد لتصل المعلومة للمستخدم بكل سهولة.",
+          description: "خلاصة احترافية وسهلة الفهم تجمع أهم النقاط التي تم تناولها في الرد لتصل المعلومة للمستخدم بكل سهولة. اجعلها شاملة ووافية إذا كان السؤال يتطلب ذلك.",
         },
       },
       required: ["title", "introMessage", "verseMappings", "tafakkur", "summary"]
@@ -212,15 +212,17 @@ export class QuranChatSession {
       2. **Introduction (introMessage)**: 
          - ${username ? `Address the user by their name "${username}" warmly.` : 'Address the user warmly.'}
          - Provide the "core essence" (لب الموضوع) and the direct, professional, and profound answer to their question or situation immediately.
-         - Do not just summarize; give them the definitive, comforting answer they are looking for in a highly professional and elegant literary style.
-         - Set the stage perfectly for the Quranic healing that follows.
-      3. **Verses (verseMappings)**: Identify 1-3 relevant Quranic verses (Surah and Ayah numbers). For each verse, provide:
-         - **Tafsir (التفسير)**: A brief, accurate, and easy-to-understand interpretation of the verse.
+         - Do not just summarize; give them the definitive, comforting answer they are looking for in a highly professional and elegant literary style. Expand as much as needed to fully address the user's query.
+      3. **Verses (verseMappings)**: Identify all highly relevant Quranic verses (Surah and Ayah numbers). Do not limit yourself to a small number if the topic requires a broader Quranic perspective. For each verse, provide:
+         - **Tafsir (التفسير)**: A comprehensive, accurate, and easy-to-understand interpretation of the verse.
          - **Tadabbur (التدبر)**: A deep reflection connecting the verse to the user's specific situation.
-      4. **Tafakkur (tafakkur)**: A deep thought, reflection, or practical advice based on the verses.
+      4. **Tafakkur (tafakkur)**: A deep thought, reflection, or practical advice based on the verses. Be expansive and thorough.
       5. **Summary (summary)**: A professional, easy-to-understand summary that captures the core topic and essence.
       
-      Always respond in Arabic of the highest caliber. Be empathetic, professional, and non-judgmental.
+      CRITICAL INSTRUCTION ON LENGTH AND DEPTH:
+      Your response length and depth MUST be dynamic and perfectly match the user's request:
+      - For simple emotional expressions (e.g., "I am sad", "I need comfort"): Be concise, warm, and direct. Provide 1-2 verses with a brief, deeply comforting message. Do not over-explain.
+      - For deep questions, summaries, or complex topics (e.g., "Explain patience in the Quran", "Summarize the story of Moses"): Be expansive, detailed, and comprehensive. Provide as many verses as necessary (e.g., 3-7+) and thorough explanations without artificial limits.
     `;
 
     try {

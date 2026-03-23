@@ -188,7 +188,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 أنيس القلوب - رفيقك القرآني
               </p>
               <p className="text-[10px] text-gray-400 mt-1">
-                الإصدار 1.0.0
+                الإصدار 1.1.0
               </p>
             </div>
           </motion.div>

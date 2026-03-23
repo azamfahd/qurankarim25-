@@ -16,10 +16,10 @@ const CopyButton: React.FC<{ text: string, label?: string }> = ({ text, label })
     <button 
       onClick={handleCopy}
       className={`btn-ghost btn-icon transition-all duration-300 ${copied ? 'text-green-600 bg-green-50' : 'hover:bg-gray-100 text-gray-500'}`}
-      style={{ width: 32, height: 32 }}
+      style={{ width: 28, height: 28 }}
       title={label || "نسخ"}
     >
-      {copied ? <Check size={16} /> : <Copy size={16} />}
+      {copied ? <Check size={14} /> : <Copy size={14} />}
     </button>
   );
 };
@@ -162,49 +162,49 @@ const VerseSection: React.FC<{
   return (
     <div className="relative group">
       {/* Verse Header & Actions */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-        <div className="flex items-center gap-3">
-          <div className="bg-[var(--color-primary-light)]/40 border border-[var(--color-primary)]/20 px-4 py-2 rounded-xl text-[var(--color-primary-dark)] font-bold flex items-center gap-2 text-sm shadow-sm">
-             <BookHeart size={16} />
+      <div className="flex flex-row justify-between items-center gap-2 mb-4">
+        <div className="flex items-center gap-2">
+          <div className="bg-[var(--color-primary-light)]/30 border border-[var(--color-primary)]/10 px-3 py-1.5 rounded-lg text-[var(--color-primary-dark)] font-medium flex items-center gap-1.5 text-xs shadow-sm">
+             <BookHeart size={14} />
              <span className="font-outfit tracking-wide">سورة {verse.surahName}</span>
-             <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-gold)]"></span>
+             <span className="w-1 h-1 rounded-full bg-[var(--color-gold)]"></span>
              <span className="font-outfit tracking-wide">آية {verse.ayahNumber}</span>
           </div>
         </div>
         
-        <div className="flex gap-1 bg-gray-50 p-1.5 rounded-xl border border-gray-100 shadow-sm">
+        <div className="flex gap-0.5 bg-gray-50/80 p-1 rounded-lg border border-gray-100 shadow-sm">
            <CopyButton text={copyText} label="نسخ الآية" />
            <button 
              onClick={() => onToggleBookmark(verse)}
              className={`btn-ghost btn-icon transition-all duration-300 ${isBookmarked ? 'text-[var(--color-gold)] bg-white shadow-sm' : 'hover:bg-white text-gray-500'}`}
-             style={{ width: 32, height: 32 }}
+             style={{ width: 28, height: 28 }}
              title={isBookmarked ? "إزالة من المحفوظات" : "حفظ الآية"}
            >
-             <BookmarkIcon size={16} fill={isBookmarked ? "currentColor" : "none"} />
+             <BookmarkIcon size={14} fill={isBookmarked ? "currentColor" : "none"} />
            </button>
            <button 
              onClick={handleShare}
              className="btn-ghost btn-icon transition-all duration-300 hover:bg-white text-[var(--color-gold)]"
-             style={{ width: 32, height: 32 }}
+             style={{ width: 28, height: 28 }}
              title="مشاركة"
            >
-             <Share2 size={16} />
+             <Share2 size={14} />
            </button>
            <button 
              onClick={toggleAudio}
              disabled={!isOnline}
              className={`btn-ghost btn-icon transition-all duration-300 ${isPlaying ? 'bg-gradient-to-br from-[var(--color-gold)] to-[var(--color-gold-dark)] text-white shadow-md' : 'hover:bg-white text-[var(--color-gold)]'}`}
-             style={{ width: 32, height: 32 }}
+             style={{ width: 28, height: 28 }}
              title="استماع"
            >
-             {!isOnline ? <WifiOff size={16} /> : (isPlaying ? <Pause size={16} /> : <Play size={16} fill="currentColor" className="ml-0.5" />)}
+             {!isOnline ? <WifiOff size={14} /> : (isPlaying ? <Pause size={14} /> : <Play size={14} fill="currentColor" className="ml-0.5" />)}
            </button>
         </div>
       </div>
 
       {/* The Quran Text */}
-      <div className="text-center mb-8 sm:mb-10 relative px-2 sm:px-4 py-4 sm:py-6">
-        <Quote className="absolute top-0 right-2 sm:right-4 text-gray-100 w-12 h-12 sm:w-16 sm:h-16 -z-10 transform -scale-x-100 opacity-50" />
+      <div className="text-center mb-4 sm:mb-6 relative px-2 sm:px-4 py-2 sm:py-4">
+        <Quote className="absolute top-0 right-2 sm:right-4 text-gray-100 w-10 h-10 sm:w-12 sm:h-12 -z-10 transform -scale-x-100 opacity-50" />
         <p className="quran-text font-bold text-[var(--color-primary-dark)] leading-[2.2] md:leading-[2.5] text-2xl sm:text-3xl md:text-4xl drop-shadow-sm" dir="rtl">
           {verse.arabicText}
           <span className="inline-flex items-center justify-center mx-2 sm:mx-3 text-[var(--color-gold-dark)] font-outfit text-sm sm:text-base md:text-lg border border-[var(--color-gold)]/30 bg-[var(--color-gold)]/5 rounded-full w-8 h-8 sm:w-10 sm:h-10 align-middle">
@@ -214,7 +214,7 @@ const VerseSection: React.FC<{
       </div>
 
       {/* Tafsir and Tadabbur Tabs */}
-      <div className="mt-2 sm:mt-6">
+      <div className="mt-2 sm:mt-4">
         <div className="flex p-1.5 bg-gray-50/80 border border-gray-100 rounded-2xl mb-4 sm:mb-6 w-full sm:w-fit mx-auto shadow-inner">
           <button
             onClick={() => setActiveTab('tafsir')}
@@ -311,7 +311,7 @@ export const ResultCard: React.FC<{
               <div className="h-px flex-1 bg-gradient-to-r from-gray-200 to-transparent"></div>
             </div>
             
-            <div className="flex flex-col gap-12">
+            <div className="flex flex-col gap-8">
               {data.verses.map((verse, idx) => {
                 const isBookmarked = bookmarks.some(b => b.verse.surahNumber === verse.surahNumber && b.verse.ayahNumber === verse.ayahNumber);
                 return (
@@ -326,7 +326,7 @@ export const ResultCard: React.FC<{
                       onShowToast={onShowToast}
                     />
                     {idx < data.verses!.length - 1 && (
-                      <div className="w-2/3 mx-auto h-px bg-gradient-to-r from-transparent via-gray-100 to-transparent mt-4"></div>
+                      <div className="w-2/3 mx-auto h-px bg-gradient-to-r from-transparent via-gray-100 to-transparent mt-2"></div>
                     )}
                   </React.Fragment>
                 );
