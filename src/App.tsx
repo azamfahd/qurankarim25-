@@ -409,8 +409,14 @@ const App: React.FC = () => {
     } catch (err: any) {
       console.error("FULL ERROR DETAILS:", err);
       let errorMessage = "حدث خطأ أثناء الاتصال. حاول مرة أخرى.";
-      if (err.message && err.message.includes("quota")) {
-        errorMessage = "تم استهلاك الحد المجاني للنموذج حالياً. يرجى المحاولة لاحقاً، أو يمكنك إضافة مفتاح API الخاص بك في الإعدادات (اختياري).";
+      if (err.message) {
+        if (err.message.includes("quota")) {
+          errorMessage = "تم استهلاك الحد المجاني للنموذج حالياً. يرجى المحاولة لاحقاً، أو يمكنك إضافة مفتاح API الخاص بك في الإعدادات (اختياري).";
+        } else if (err.message.toLowerCase().includes("api key not valid") || err.message.toLowerCase().includes("invalid api key")) {
+          errorMessage = "مفتاح API الذي قمت بإدخاله غير صالح. يرجى التأكد من صحته في الإعدادات، أو مسحه لاستخدام الوضع التلقائي.";
+        } else if (err.message.includes("fetch") || err.message.includes("network")) {
+          errorMessage = "تأكد من اتصالك بالإنترنت وحاول مرة أخرى.";
+        }
       }
       setError(errorMessage);
       setState(AppState.ERROR);

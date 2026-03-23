@@ -3,15 +3,20 @@ import { QuranResponse, UserSettings, Verse } from '../types';
 import { QuranDataService } from './quranDataService';
 
 export class QuranChatSession {
-  private ai: GoogleGenAI;
+  private ai: GoogleGenAI | null = null;
   private model: string;
   private settings: UserSettings;
+  private apiKey: string;
 
   constructor(settings: UserSettings) {
     this.settings = settings;
     // Use user-provided key if available, otherwise use environment key
-    const apiKey = settings.apiKey || process.env.GEMINI_API_KEY || (import.meta as any).env?.VITE_GEMINI_API_KEY || '';
-    this.ai = new GoogleGenAI({ apiKey });
+    this.apiKey = settings.apiKey || process.env.GEMINI_API_KEY || (import.meta as any).env?.VITE_GEMINI_API_KEY || '';
+    
+    if (this.apiKey) {
+      this.ai = new GoogleGenAI({ apiKey: this.apiKey });
+    }
+    
     let selectedModel = settings.model || 'gemini-3-flash-preview';
     if ((selectedModel as string).includes('1.5') || (selectedModel as string) === 'gemini-pro') {
       selectedModel = 'gemini-3-flash-preview';
@@ -19,7 +24,81 @@ export class QuranChatSession {
     this.model = selectedModel;
   }
 
+  private async getOfflineFallbackResponse(userMessage: string, username?: string): Promise<QuranResponse> {
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    const greeting = username ? `أهلاً بك يا ${username}` : 'أهلاً بك يا صديقي';
+    
+    const fallbacks = [
+      {
+        title: 'سكينة وطمأنينة',
+        introMessage: `${greeting}، يبدو أنك تستخدم التطبيق في وضع عدم الاتصال بالذكاء الاصطناعي (لم يتم إدخال مفتاح API). لا تقلق، القرآن الكريم دائماً مليء بالبشائر والرسائل التي تلامس القلوب في كل الأوقات. إليك هذه الآية التي تحمل معاني الطمأنينة والرحمة:`,
+        verses: [
+          {
+            text: 'فَإِنَّ مَعَ الْعُسْرِ يُسْرًا',
+            arabicText: 'فَإِنَّ مَعَ الْعُسْرِ يُسْرًا',
+            surah: 'الشرح',
+            surahName: 'الشرح',
+            number: 5,
+            surahNumber: 94,
+            ayahNumber: 5,
+            tafsir: 'أي: فإن مع الشدة والضيق سهولة واتساعاً.',
+            translation: 'For indeed, with hardship [will be] ease.'
+          }
+        ],
+        tafakkur: 'مهما ضاقت بك السبل، تذكر أن الله سبحانه وتعالى قد قرن العسر بيسرين. هذه رسالة ربانية تدعوك للتفاؤل واليقين بأن الفرج قريب، وأن كل أزمة تمر بها هي مجرد محطة عابرة نحو خير أكبر.',
+        summary: 'للحصول على إجابات مخصصة وتفاعلية تناسب حالتك بدقة، يمكنك إضافة مفتاح Gemini API الخاص بك من خلال صفحة الإعدادات (أيقونة الترس).'
+      },
+      {
+        title: 'رحمة واسعة',
+        introMessage: `${greeting}، أنت الآن في الوضع التلقائي (بدون مفتاح API). القرآن الكريم هو الملاذ الآمن لكل قلب يبحث عن النور. تأمل معي هذه الآية العظيمة:`,
+        verses: [
+          {
+            text: 'قُلْ يَا عِبَادِيَ الَّذِينَ أَسْرَفُوا عَلَىٰ أَنفُسِهِمْ لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ ۚ إِنَّ اللَّهَ يَغْفِرُ الذُّنُوبَ جَمِيعًا ۚ إِنَّهُ هُوَ الْغَفُورُ الرَّحِيمُ',
+            arabicText: 'قُلْ يَا عِبَادِيَ الَّذِينَ أَسْرَفُوا عَلَىٰ أَنفُسِهِمْ لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ ۚ إِنَّ اللَّهَ يَغْفِرُ الذُّنُوبَ جَمِيعًا ۚ إِنَّهُ هُوَ الْغَفُورُ الرَّحِيمُ',
+            surah: 'الزمر',
+            surahName: 'الزمر',
+            number: 53,
+            surahNumber: 39,
+            ayahNumber: 53,
+            tafsir: 'لا تيأسوا من رحمة الله بسبب كثرة ذنوبكم، فالله يغفر الذنوب جميعاً لمن تاب.',
+            translation: 'Say, "O My servants who have transgressed against themselves [by sinning], do not despair of the mercy of Allah. Indeed, Allah forgives all sins. Indeed, it is He who is the Forgiving, the Merciful."'
+          }
+        ],
+        tafakkur: 'باب التوبة والرحمة مفتوح دائماً. مهما شعرت بالابتعاد، فإن خطوة واحدة صادقة نحو الله تكفي ليمحو كل ما مضى ويبدله خيراً.',
+        summary: 'للحصول على إجابات مخصصة وتفاعلية تناسب حالتك بدقة، يمكنك إضافة مفتاح Gemini API الخاص بك من خلال صفحة الإعدادات (أيقونة الترس).'
+      },
+      {
+        title: 'معية الله',
+        introMessage: `${greeting}، في الوضع التلقائي الحالي (بدون مفتاح API)، أهديك هذه الآية التي تبث في الروح القوة والشعور بمعية الله الدائمة:`,
+        verses: [
+          {
+            text: 'لَا تَحْزَنْ إِنَّ اللَّهَ مَعَنَا',
+            arabicText: 'لَا تَحْزَنْ إِنَّ اللَّهَ مَعَنَا',
+            surah: 'التوبة',
+            surahName: 'التوبة',
+            number: 40,
+            surahNumber: 9,
+            ayahNumber: 40,
+            tafsir: 'لا تحزن يا أبا بكر، فإن الله معنا بنصره وتأييده وحفظه.',
+            translation: 'Do not grieve; indeed Allah is with us.'
+          }
+        ],
+        tafakkur: 'عندما تشعر بالوحدة أو الخوف من المستقبل، تذكر أن الله معك. ومن كان الله معه، فمن عليه؟ استشعر هذه المعية في كل لحظة من حياتك.',
+        summary: 'للحصول على إجابات مخصصة وتفاعلية تناسب حالتك بدقة، يمكنك إضافة مفتاح Gemini API الخاص بك من خلال صفحة الإعدادات (أيقونة الترس).'
+      }
+    ];
+
+    const randomFallback = fallbacks[Math.floor(Math.random() * fallbacks.length)];
+    return randomFallback;
+  }
+
   async sendMessage(userMessage: string, username?: string): Promise<QuranResponse> {
+    if (!this.ai || !this.apiKey) {
+      return this.getOfflineFallbackResponse(userMessage, username);
+    }
+
     const responseSchema = {
       type: Type.OBJECT,
       properties: {
@@ -131,10 +210,13 @@ export class QuranChatSession {
             ]);
             
             return {
+              text: arabicText, // Required by Verse interface
+              arabicText,
+              surah: surahName, // Required by Verse interface
               surahName,
+              number: mapping.ayahNumber, // Required by Verse interface
               surahNumber: mapping.surahNumber,
               ayahNumber: mapping.ayahNumber,
-              arabicText,
               tafsir: mapping.tafsir,
               tadabbur: mapping.tadabbur,
             };
