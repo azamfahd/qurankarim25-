@@ -4,10 +4,22 @@ import { Coordinates, CalculationMethod, PrayerTimes, SunnahTimes } from 'adhan'
 
 export const PrayerTimesWidget: React.FC = () => {
   const [prayerTimes, setPrayerTimes] = useState<PrayerTimes | null>(null);
-  const [locationName, setLocationName] = useState<string>('جاري التحديد...');
+  const [locationName, setLocationName] = useState<string>('مكة المكرمة');
+  const [isLoadingLocation, setIsLoadingLocation] = useState(false);
 
+  // Default to Makkah on mount
   useEffect(() => {
+    const coords = new Coordinates(21.4225, 39.8262);
+    const params = CalculationMethod.MuslimWorldLeague();
+    const date = new Date();
+    const times = new PrayerTimes(coords, date, params);
+    setPrayerTimes(times);
+  }, []);
+
+  const requestLocation = () => {
     if (navigator.geolocation) {
+      setIsLoadingLocation(true);
+      setLocationName('جاري التحديد...');
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
@@ -16,23 +28,19 @@ export const PrayerTimesWidget: React.FC = () => {
           const date = new Date();
           const times = new PrayerTimes(coords, date, params);
           setPrayerTimes(times);
-          
-          // Simple reverse geocoding or just use coordinates
           setLocationName('موقعك الحالي');
+          setIsLoadingLocation(false);
         },
         (error) => {
           console.error("Geolocation error:", error);
-          // Default to Makkah if blocked
-          const coords = new Coordinates(21.4225, 39.8262);
-          const params = CalculationMethod.MuslimWorldLeague();
-          const date = new Date();
-          const times = new PrayerTimes(coords, date, params);
-          setPrayerTimes(times);
-          setLocationName('مكة المكرمة');
+          setLocationName('تعذر تحديد الموقع');
+          setIsLoadingLocation(false);
         }
       );
+    } else {
+      setLocationName('غير مدعوم');
     }
-  }, []);
+  };
 
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit', hour12: true });
@@ -61,10 +69,15 @@ export const PrayerTimesWidget: React.FC = () => {
           </div>
           <h3 className="font-bold text-lg">مواقيت الصلاة</h3>
         </div>
-        <div className="flex items-center gap-1.5 text-[10px] bg-white/10 px-2 py-1 rounded-full border border-white/10">
-          <MapPin size={10} />
+        <button 
+          onClick={requestLocation}
+          disabled={isLoadingLocation}
+          className="flex items-center gap-1.5 text-[10px] bg-white/10 hover:bg-white/20 px-2 py-1 rounded-full border border-white/10 transition-colors cursor-pointer disabled:opacity-50"
+          title="تحديث الموقع"
+        >
+          <MapPin size={10} className={isLoadingLocation ? "animate-pulse" : ""} />
           <span>{locationName}</span>
-        </div>
+        </button>
       </div>
       
       <div className="grid grid-cols-5 gap-2 relative z-10">
