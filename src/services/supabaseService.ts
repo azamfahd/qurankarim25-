@@ -1,18 +1,49 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { ChatSession, UserSettings, Bookmark } from '../types';
 
-// Get environment variables from process.env (injected by Vite)
-const supabaseUrl = process.env.VITE_SUPABASE_URL || '';
-const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY || '';
+// Get environment variables from import.meta.env (injected by Vite)
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
 // Lazy initialization of Supabase client
 let supabaseInstance: SupabaseClient | null = null;
 
 export const getSupabase = (): SupabaseClient | null => {
-  if (!supabaseUrl || !supabaseAnonKey) return null;
+  if (!supabaseUrl || supabaseUrl === 'undefined' || !supabaseAnonKey || supabaseAnonKey === 'undefined') return null;
+  
+  let validUrl = supabaseUrl;
+  
+  // Handle case where user pasted the entire connection string or postgres URL
+  if (validUrl.includes('https://')) {
+    const match = validUrl.match(/https:\/\/[a-zA-Z0-9-]+\.supabase\.co/);
+    if (match) {
+      validUrl = match[0];
+    }
+  } else if (!validUrl.startsWith('http://') && !validUrl.startsWith('https://')) {
+    // Handle case where user just pasted the project ID or domain without https://
+    if (validUrl.includes('supabase.co')) {
+      validUrl = `https://${validUrl.split('@').pop()?.split(':').shift()?.replace('db.', '')}`;
+    } else {
+      validUrl = `https://${validUrl}.supabase.co`;
+    }
+  }
+
+  let validKey = supabaseAnonKey;
+  if (validKey.includes('eyJ')) {
+    const match = validKey.match(/eyJ[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+/);
+    if (match) {
+      validKey = match[0];
+    }
+  } else if (validKey.includes('sb_publishable_')) {
+    const match = validKey.match(/sb_publishable_[a-zA-Z0-9_-]+/);
+    if (match) {
+      validKey = match[0];
+    }
+  }
+
   if (!supabaseInstance) {
     try {
-      supabaseInstance = createClient(supabaseUrl, supabaseAnonKey);
+      supabaseInstance = createClient(validUrl, validKey);
     } catch (e) {
       console.error('Failed to initialize Supabase:', e);
       return null;
