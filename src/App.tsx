@@ -284,17 +284,14 @@ const App: React.FC = () => {
   }, [settings, firebaseUser, isOnline]);
 
   useEffect(() => {
-    localStorage.setItem('anis_active_chat', JSON.stringify(messages));
-    if (currentSessionId) {
-      localStorage.setItem('anis_active_session_id', currentSessionId);
-    } else {
-      localStorage.removeItem('anis_active_session_id');
-    }
-    
     if (messages.length > 0) {
-       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+       // Ensure smooth scrolling to the latest message
+       setTimeout(() => {
+         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+       }, 100);
     }
-  }, [messages, state, currentSessionId]);
+  }, [messages, state]);
+
 
   const saveCurrentSessionToHistory = (msgs: ChatMessage[]) => {
     if (msgs.length === 0) return;
@@ -379,6 +376,10 @@ const App: React.FC = () => {
       setError("لا يمكن إرسال الرسائل في وضع عدم الاتصال.");
       return;
     }
+    
+    // Prevent multiple submissions while loading
+    if (state === AppState.LOADING) return;
+
     setState(AppState.LOADING);
     setLoadingText(LOADING_MESSAGES[0]);
     setError(null);

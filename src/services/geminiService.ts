@@ -143,7 +143,7 @@ export class QuranChatSession {
     return randomFallback;
   }
 
-  async sendMessage(userMessage: string, username?: string): Promise<QuranResponse> {
+  async sendMessage(userMessage: string, username?: string, retryCount = 0): Promise<QuranResponse> {
     if (!this.ai || !this.apiKey) {
       return this.getOfflineFallbackResponse(userMessage, username);
     }
@@ -289,6 +289,13 @@ export class QuranChatSession {
 
     } catch (error: any) {
       console.error("Gemini API Error:", error);
+      
+      // Auto-retry once for network errors
+      if (retryCount < 1 && (error.message?.includes("fetch") || error.message?.includes("network") || error.message?.includes("failed to fetch"))) {
+        console.log("Retrying Gemini request...");
+        return this.sendMessage(userMessage, username, retryCount + 1);
+      }
+      
       throw error;
     }
   }
