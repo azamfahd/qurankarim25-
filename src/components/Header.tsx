@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, User, Calendar, Moon, Search } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Menu, User, Calendar, Moon, RefreshCw, CheckCircle2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface HeaderProps {
   onOpenSidebar: () => void;
   onOpenSettings: () => void;
   username: string;
+  isSyncing?: boolean;
+  lastSynced?: number | null;
 }
 
-const Header = React.memo<HeaderProps>(({ onOpenSidebar, onOpenSettings, username }) => {
+const Header = React.memo<HeaderProps>(({ onOpenSidebar, onOpenSettings, username, isSyncing, lastSynced }) => {
   const [hijriDate, setHijriDate] = useState<string>('');
 
   useEffect(() => {
@@ -52,6 +54,21 @@ const Header = React.memo<HeaderProps>(({ onOpenSidebar, onOpenSettings, usernam
       </div>
 
       <div className="flex items-center gap-2">
+        <AnimatePresence>
+          {isSyncing && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              className="flex items-center gap-1.5 px-2 py-1 bg-white/10 rounded-full border border-white/10"
+              title="جاري المزامنة..."
+            >
+              <RefreshCw size={12} className="text-[var(--color-gold)] animate-spin" />
+              <span className="text-[9px] text-white/70 font-bold">مزامنة</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <button 
           onClick={onOpenSettings}
           className="group flex items-center gap-3 pl-2 pr-1 py-1 bg-white/10 hover:bg-white/20 border border-white/10 rounded-full transition-all shadow-sm hover:shadow-md"

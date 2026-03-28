@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#064e3b" />
+      <stop offset="100%" stop-color="#022c22" />
+    </linearGradient>
+    <linearGradient id="gold-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fde047" />
+      <stop offset="100%" stop-color="#d4af37" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="128" fill="url(#bg-gradient)"/>
+  
+  <!-- Decorative Outer Ring -->
+  <circle cx="256" cy="256" r="180" stroke="url(#gold-gradient)" stroke-width="8" stroke-dasharray="20 10" fill="none" opacity="0.5"/>
+  
+  <!-- Open Book / Quran Symbol -->
+  <path d="M256 352 c -40 -30 -100 -30 -140 0 v -160 c 40 -30 100 -30 140 0 c 40 -30 100 -30 140 0 v 160 c -40 -30 -100 -30 -140 0 z" fill="none" stroke="url(#gold-gradient)" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Center Line (Binding) -->
+  <line x1="256" y1="192" x2="256" y2="352" stroke="url(#gold-gradient)" stroke-width="24" stroke-linecap="round"/>
+  
+  <!-- Pages Lines Left -->
+  <line x1="146" y1="220" x2="226" y2="240" stroke="url(#gold-gradient)" stroke-width="16" stroke-linecap="round" opacity="0.7"/>
+  <line x1="146" y1="260" x2="226" y2="280" stroke="url(#gold-gradient)" stroke-width="16" stroke-linecap="round" opacity="0.7"/>
+  
+  <!-- Pages Lines Right -->
+  <line x1="366" y1="220" x2="286" y2="240" stroke="url(#gold-gradient)" stroke-width="16" stroke-linecap="round" opacity="0.7"/>
+  <line x1="366" y1="260" x2="286" y2="280" stroke="url(#gold-gradient)" stroke-width="16" stroke-linecap="round" opacity="0.7"/>
+  
+  <!-- Top Star/Diamond -->
+  <polygon points="256,120 268,144 292,156 268,168 256,192 244,168 220,156 244,144" fill="url(#gold-gradient)"/>
+</svg>

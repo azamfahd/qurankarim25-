@@ -1,44 +1,54 @@
 import React, { useState, useEffect } from 'react';
 import { Clock, MapPin } from 'lucide-react';
-import { Coordinates, CalculationMethod, PrayerTimes, SunnahTimes } from 'adhan';
+import { Coordinates, CalculationMethod, PrayerTimes } from 'adhan';
+import { UserSettings, UserLocation } from '../types';
 
-export const PrayerTimesWidget: React.FC = () => {
+interface PrayerTimesWidgetProps {
+  settings: UserSettings;
+  onUpdateSettings: (settings: UserSettings) => void;
+}
+
+export const PrayerTimesWidget: React.FC<PrayerTimesWidgetProps> = ({ settings, onUpdateSettings }) => {
   const [prayerTimes, setPrayerTimes] = useState<PrayerTimes | null>(null);
-  const [locationName, setLocationName] = useState<string>('مكة المكرمة');
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
 
-  // Default to Makkah on mount
+  // Use location from settings or default to Makkah
   useEffect(() => {
-    const coords = new Coordinates(21.4225, 39.8262);
+    const latitude = settings.location?.latitude ?? 21.4225;
+    const longitude = settings.location?.longitude ?? 39.8262;
+    
+    const coords = new Coordinates(latitude, longitude);
     const params = CalculationMethod.MuslimWorldLeague();
     const date = new Date();
     const times = new PrayerTimes(coords, date, params);
     setPrayerTimes(times);
-  }, []);
+  }, [settings.location]);
 
-  const requestLocation = () => {
-    if (navigator.geolocation) {
-      setIsLoadingLocation(true);
-      setLocationName('جاري التحديد...');
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          const coords = new Coordinates(latitude, longitude);
-          const params = CalculationMethod.MuslimWorldLeague();
-          const date = new Date();
-          const times = new PrayerTimes(coords, date, params);
-          setPrayerTimes(times);
-          setLocationName('موقعك الحالي');
-          setIsLoadingLocation(false);
-        },
-        (error) => {
-          console.error("Geolocation error:", error);
-          setLocationName('تعذر تحديد الموقع');
-          setIsLoadingLocation(false);
-        }
-      );
-    } else {
-      setLocationName('غير مدعوم');
+  const requestLocation = async () => {
+    setIsLoadingLocation(true);
+    try {
+      const response = await fetch('https://get.geojs.io/v1/ip/geo.json');
+      if (!response.ok) throw new Error('Network response was not ok');
+      const data = await response.json();
+      
+      const latitude = parseFloat(data.latitude);
+      const longitude = parseFloat(data.longitude);
+      const name = data.city ? `${data.city}، ${data.country}` : 'موقعك الحالي';
+      
+      const newLocation: UserLocation = {
+        latitude,
+        longitude,
+        name
+      };
+
+      onUpdateSettings({
+        ...settings,
+        location: newLocation
+      });
+    } catch (error) {
+      console.error("Geolocation error:", error);
+    } finally {
+      setIsLoadingLocation(false);
     }
   };
 
@@ -55,6 +65,8 @@ export const PrayerTimesWidget: React.FC = () => {
     { name: 'المغرب', time: formatTime(prayerTimes.maghrib) },
     { name: 'العشاء', time: formatTime(prayerTimes.isha) },
   ];
+
+  const currentLocationName = settings.location?.name || 'مكة المكرمة';
 
   return (
     <div className="bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-dark)] rounded-3xl p-6 text-white shadow-lg border border-white/10 relative overflow-hidden group h-full flex flex-col justify-between">
@@ -76,7 +88,7 @@ export const PrayerTimesWidget: React.FC = () => {
           title="تحديث الموقع"
         >
           <MapPin size={10} className={isLoadingLocation ? "animate-pulse" : ""} />
-          <span>{locationName}</span>
+          <span>{isLoadingLocation ? 'جاري التحديد...' : currentLocationName}</span>
         </button>
       </div>
       

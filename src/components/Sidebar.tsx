@@ -1,5 +1,5 @@
 import React from 'react';
-import { Settings, History, PlusCircle, X, User, Heart, Bookmark as BookmarkIcon, SunMoon, BookOpenText, Share2, Compass, Calculator } from 'lucide-react';
+import { Settings, History, PlusCircle, X, User, Heart, Bookmark as BookmarkIcon, SunMoon, BookOpenText, Share2, Compass, Calculator, Download, MonitorCheck } from 'lucide-react';
 import { UserSettings } from '../types';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -171,6 +171,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       title: 'تطبيق أنيس القلوب',
                       text: 'رفيقك القرآني للتدبر والسكينة. جربه الآن!',
                       url: window.location.origin
+                    }).catch((error) => {
+                      // Ignore AbortError which happens when user cancels the share dialog
+                      if (error.name !== 'AbortError' && !error.message.includes('canceled')) {
+                        console.error('Error sharing:', error);
+                      }
                     });
                   } else {
                     navigator.clipboard.writeText(window.location.origin);

@@ -69,7 +69,7 @@ export const DailyVerse: React.FC = () => {
           transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
           className="flex flex-col items-center relative z-10"
         >
-          <p className="text-2xl md:text-3xl font-bold leading-[1.8] text-center text-gray-900 mb-6 px-2 quran-text drop-shadow-sm tracking-normal" style={{ wordSpacing: '0.1em' }}>
+          <p className="text-2xl md:text-3xl font-bold leading-[1.8] text-center text-gray-900 mb-6 px-2 quran-text drop-shadow-sm tracking-normal">
             "{verse.text}"
           </p>
           <div className="flex items-center gap-3 text-sm font-bold text-[var(--color-gold-dark)] bg-[var(--color-gold)]/5 px-4 py-2 rounded-xl border border-[var(--color-gold)]/20 shadow-sm">

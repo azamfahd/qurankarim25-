@@ -1,7 +1,7 @@
 {
   "name": "anis-al-qulub-quranic-companion",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -16,20 +16,19 @@
     "adhan": "^4.4.3",
     "autoprefixer": "^10.4.27",
     "clsx": "^2.1.1",
-    "firebase": "^12.11.0",
     "framer-motion": "^12.38.0",
     "lucide-react": "^0.562.0",
     "postcss": "^8.5.8",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "tailwind-merge": "^3.5.0",
-    "tailwindcss": "^4.0.0"
+    "tailwindcss": "^4.0.0",
+    "vite-plugin-pwa": "^1.2.0"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
     "@vitejs/plugin-react": "^5.0.0",
     "typescript": "~5.8.2",
-    "vite": "^6.2.0",
-    "vite-plugin-pwa": "^1.2.0"
+    "vite": "^6.2.0"
   }
 }

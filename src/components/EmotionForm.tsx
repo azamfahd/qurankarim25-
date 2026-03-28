@@ -27,19 +27,23 @@ export const EmotionForm: React.FC<EmotionFormProps> = ({ onSubmit, isLoading, i
           type="text"
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="بماذا تشعر اليوم؟ أو ما هو سؤالك؟"
+          placeholder={isOnline ? "بماذا تشعر اليوم؟ أو ما هو سؤالك؟" : "أنت غير متصل بالإنترنت"}
           disabled={isLoading || !isOnline}
-          className="relative w-full bg-white/10 backdrop-blur-xl border border-white/20 rounded-full py-4 px-8 text-white placeholder:text-white/50 text-base focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]/50 shadow-2xl transition-all disabled:opacity-50"
+          className={`relative w-full bg-white/10 backdrop-blur-xl border border-white/20 rounded-full py-4 px-8 text-white placeholder:text-white/50 text-base focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]/50 shadow-2xl transition-all ${!isOnline ? 'opacity-50 cursor-not-allowed bg-red-900/20 border-red-500/30' : ''}`}
           dir="rtl"
         />
       </div>
       <button
         type="submit"
         disabled={!text.trim() || isLoading || !isOnline}
-        className="relative w-14 h-14 rounded-full bg-gradient-to-br from-[var(--color-gold)] to-[var(--color-gold-dark)] text-white flex items-center justify-center hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(197,160,89,0.3)] shrink-0 group overflow-hidden"
+        className={`relative w-14 h-14 rounded-full bg-gradient-to-br from-[var(--color-gold)] to-[var(--color-gold-dark)] text-white flex items-center justify-center hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(197,160,89,0.3)] shrink-0 group overflow-hidden ${!isOnline ? 'grayscale' : ''}`}
       >
         <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
-        <Send size={24} className={`relative z-10 ${text.trim() && !isLoading ? 'rtl:-scale-x-100' : ''}`} />
+        {isLoading ? (
+          <div className="relative z-10 w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+        ) : (
+          <Send size={24} className={`relative z-10 ${text.trim() && !isLoading ? 'rtl:-scale-x-100' : ''}`} />
+        )}
       </button>
     </form>
   );

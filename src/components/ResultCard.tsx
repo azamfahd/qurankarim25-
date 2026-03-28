@@ -24,6 +24,17 @@ const CopyButton: React.FC<{ text: string, label?: string }> = ({ text, label })
   );
 };
 
+const renderHighlightedText = (text: string, highlightClass: string = "text-[var(--color-gold-dark)] font-bold") => {
+  if (!text) return null;
+  const parts = text.split(/(\*\*.*?\*\*)/g);
+  return parts.map((part, index) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <span key={index} className={highlightClass}>{part.slice(2, -2)}</span>;
+    }
+    return <span key={index}>{part}</span>;
+  });
+};
+
 const VerseSection: React.FC<{ 
   verse: Verse, 
   index: number, 
@@ -166,9 +177,9 @@ const VerseSection: React.FC<{
         <div className="flex items-center gap-2">
           <div className="bg-[var(--color-primary-light)]/30 border border-[var(--color-primary)]/10 px-3 py-1.5 rounded-lg text-[var(--color-primary-dark)] font-medium flex items-center gap-1.5 text-xs shadow-sm">
              <BookHeart size={14} />
-             <span className="font-outfit tracking-wide">سورة {verse.surahName}</span>
+             <span className="font-bold">سورة {verse.surahName}</span>
              <span className="w-1 h-1 rounded-full bg-[var(--color-gold)]"></span>
-             <span className="font-outfit tracking-wide">آية {verse.ayahNumber}</span>
+             <span className="font-bold">آية {verse.ayahNumber}</span>
           </div>
         </div>
         
@@ -207,7 +218,7 @@ const VerseSection: React.FC<{
         <Quote className="absolute top-0 right-2 sm:right-4 text-gray-100 w-10 h-10 sm:w-12 sm:h-12 -z-10 transform -scale-x-100 opacity-50" />
         <p className="quran-text font-bold text-[var(--color-primary-dark)] leading-[2.2] md:leading-[2.5] text-2xl sm:text-3xl md:text-4xl drop-shadow-sm" dir="rtl">
           {verse.arabicText}
-          <span className="inline-flex items-center justify-center mx-2 sm:mx-3 text-[var(--color-gold-dark)] font-outfit text-sm sm:text-base md:text-lg border border-[var(--color-gold)]/30 bg-[var(--color-gold)]/5 rounded-full w-8 h-8 sm:w-10 sm:h-10 align-middle">
+          <span className="inline-flex items-center justify-center mx-2 sm:mx-3 text-[var(--color-gold-dark)] font-bold text-sm sm:text-base md:text-lg border border-[var(--color-gold)]/30 bg-[var(--color-gold)]/5 rounded-full w-8 h-8 sm:w-10 sm:h-10 align-middle">
             {verse.ayahNumber}
           </span>
         </p>
@@ -243,8 +254,8 @@ const VerseSection: React.FC<{
                 transition={{ duration: 0.3 }}
                 className="bg-white rounded-2xl p-5 sm:p-8 border border-gray-100 shadow-sm"
               >
-                <p className="explanation-text text-gray-700 text-base sm:text-lg text-justify">
-                  {verse.tafsir}
+                <p className="explanation-text text-gray-700 text-base sm:text-lg leading-relaxed text-justify">
+                  {renderHighlightedText(verse.tafsir)}
                 </p>
               </motion.div>
             ) : (
@@ -256,8 +267,8 @@ const VerseSection: React.FC<{
                 transition={{ duration: 0.3 }}
                 className="bg-gradient-to-br from-[var(--color-primary-light)]/5 to-transparent rounded-2xl p-5 sm:p-8 border border-[var(--color-primary)]/10 shadow-sm"
               >
-                <p className="explanation-text text-gray-800 text-base sm:text-lg text-justify font-medium">
-                  {verse.tadabbur}
+                <p className="explanation-text text-gray-800 text-base sm:text-lg leading-relaxed text-justify font-medium">
+                  {renderHighlightedText(verse.tadabbur)}
                 </p>
               </motion.div>
             )}
@@ -296,8 +307,8 @@ export const ResultCard: React.FC<{
                </div>
                <span className="text-sm font-bold text-gray-800">رسالة مخصصة لك</span>
             </div>
-            <p className="explanation-text text-gray-800 text-base sm:text-lg md:text-xl text-justify font-medium">
-               {data.introMessage}
+            <p className="explanation-text text-gray-800 text-base sm:text-lg leading-relaxed text-justify font-medium">
+               {renderHighlightedText(data.introMessage)}
             </p>
           </div>
         </div>
@@ -307,7 +318,7 @@ export const ResultCard: React.FC<{
           <div className="p-6 sm:p-8 md:p-12 bg-white">
             <div className="flex items-center gap-4 mb-10">
               <div className="h-px flex-1 bg-gradient-to-l from-gray-200 to-transparent"></div>
-              <span className="text-sm font-black text-[var(--color-primary)] uppercase tracking-widest bg-[var(--color-primary-light)]/20 px-4 py-1.5 rounded-full">الآيات والتأملات</span>
+              <span className="text-sm font-bold text-[var(--color-primary)] uppercase bg-[var(--color-primary-light)]/20 px-4 py-1.5 rounded-full">الآيات والتأملات</span>
               <div className="h-px flex-1 bg-gradient-to-r from-gray-200 to-transparent"></div>
             </div>
             
@@ -350,8 +361,8 @@ export const ResultCard: React.FC<{
                 <CopyButton text={data.tafakkur} label="نسخ التفكر" />
               </div>
             </div>
-            <p className="explanation-text text-gray-700 text-base sm:text-lg text-justify font-medium relative z-10">
-              {data.tafakkur}
+            <p className="explanation-text text-gray-700 text-base sm:text-lg leading-relaxed text-justify font-medium relative z-10">
+              {renderHighlightedText(data.tafakkur)}
             </p>
           </div>
         )}
@@ -370,8 +381,8 @@ export const ResultCard: React.FC<{
               <h3 className="text-base sm:text-lg font-bold text-[var(--color-gold-light)]">الخلاصة</h3>
             </div>
             
-            <p className="explanation-text text-white/90 text-base sm:text-lg md:text-xl relative z-10 font-medium text-justify italic">
-              "{data.summary}"
+            <p className="explanation-text text-white/90 text-base sm:text-lg leading-relaxed relative z-10 font-medium text-justify italic">
+              "{renderHighlightedText(data.summary, "text-[var(--color-gold-light)] font-bold")}"
             </p>
           </div>
         )}

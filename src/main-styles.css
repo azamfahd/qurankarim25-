@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Cairo:wght@400;600;700&family=Amiri:wght@400;700&family=Outfit:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Amiri:wght@400;700&display=swap');
 @import "tailwindcss";
 
 :root {
@@ -33,17 +33,18 @@
 
 body {
   margin: 0;
-  font-family: 'Tajawal', system-ui, -apple-system, sans-serif;
+  font-family: 'Cairo', system-ui, -apple-system, sans-serif;
+  font-size: 14px;
   background-color: var(--color-bg);
   color: var(--color-text);
   direction: rtl;
   -webkit-font-smoothing: antialiased;
+  word-spacing: normal;
+  letter-spacing: normal;
 }
 
 .explanation-text {
-  font-family: 'Cairo', 'Tajawal', sans-serif;
-  line-height: 1.85;
-  letter-spacing: 0.01em;
+  line-height: 1.75;
 }
 
 .app-wrapper {
@@ -66,7 +67,7 @@ body {
   gap: 0.5rem;
   background-color: var(--color-primary);
   color: white;
-  font-weight: 500;
+  font-weight: 600;
   padding: 0.75rem 1.5rem;
   border-radius: 9999px;
   transition: all 0.2s;
@@ -107,7 +108,6 @@ body {
   border-bottom-left-radius: 0.25rem;
   max-w: 85%;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  font-family: 'Cairo', 'Tajawal', sans-serif;
 }
 
 .message-row {
@@ -185,13 +185,12 @@ body {
   font-size: 0.875rem;
   font-weight: 700;
   color: var(--color-gold-light);
-  letter-spacing: 0.025em;
 }
 
 .quran-text {
-  font-family: 'Amiri', 'Traditional Arabic', 'Scheherazade New', serif;
-  line-height: 2;
-  word-spacing: 0.2em;
+  font-family: 'Amiri', 'Traditional Arabic', serif;
+  line-height: 2.2;
+  font-size: 1.35rem;
 }
 
 .custom-scrollbar::-webkit-scrollbar {

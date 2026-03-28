@@ -35,6 +35,34 @@ export class SupabaseService {
   private static TABLE_SETTINGS = 'user_settings';
   private static TABLE_BOOKMARKS = 'bookmarks';
 
+  static async signInWithGoogle() {
+    const client = getSupabase();
+    if (!client) throw new Error("Supabase client not initialized");
+    const { data, error } = await client.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin
+      }
+    });
+    if (error) throw error;
+    return data;
+  }
+
+  static async signOut() {
+    const client = getSupabase();
+    if (!client) return;
+    const { error } = await client.auth.signOut();
+    if (error) throw error;
+  }
+
+  static onAuthStateChange(callback: (user: any) => void) {
+    const client = getSupabase();
+    if (!client) return { data: { subscription: { unsubscribe: () => {} } } };
+    return client.auth.onAuthStateChange((event, session) => {
+      callback(session?.user || null);
+    });
+  }
+
   static async saveSessions(userId: string, sessions: ChatSession[]): Promise<void> {
     if (!userId) return;
     const client = getSupabase();
@@ -49,7 +77,7 @@ export class SupabaseService {
             user_id: userId,
             date: session.date,
             preview: session.preview,
-            messages: JSON.stringify(session.messages),
+            messages: session.messages, // Pass object directly for JSONB compatibility
           });
       }
     } catch (error) {
@@ -57,10 +85,10 @@ export class SupabaseService {
     }
   }
 
-  static async loadSessions(userId: string): Promise<ChatSession[]> {
-    if (!userId) return [];
+  static async loadSessions(userId: string): Promise<ChatSession[] | null> {
+    if (!userId) return null;
     const client = getSupabase();
-    if (!client) return [];
+    if (!client) return null;
 
     try {
       const { data, error } = await client
@@ -75,11 +103,11 @@ export class SupabaseService {
         id: item.id,
         date: item.date,
         preview: item.preview,
-        messages: JSON.parse(item.messages),
+        messages: typeof item.messages === 'string' ? JSON.parse(item.messages) : item.messages,
       }));
     } catch (error) {
       console.error('Error loading chat sessions:', error);
-      return [];
+      return null;
     }
   }
 
@@ -98,7 +126,8 @@ export class SupabaseService {
           model: settings.model,
           creativity_level: settings.creativityLevel,
           reciter: settings.reciter,
-          preferred_backend: settings.preferredBackend,
+          bookmarks: settings.bookmarks || [],
+          location: settings.location || null,
           last_updated: settings.lastUpdated || new Date().toISOString()
         });
     } catch (error) {
@@ -126,7 +155,8 @@ export class SupabaseService {
         model: data.model,
         creativityLevel: data.creativity_level,
         reciter: data.reciter,
-        preferredBackend: data.preferred_backend,
+        bookmarks: typeof data.bookmarks === 'string' ? JSON.parse(data.bookmarks) : (data.bookmarks || []),
+        location: typeof data.location === 'string' ? JSON.parse(data.location) : (data.location || undefined),
         lastUpdated: data.last_updated
       };
     } catch (error) {
@@ -175,7 +205,7 @@ export class SupabaseService {
         .upsert({
           id: bookmark.id,
           user_id: userId,
-          verse: JSON.stringify(bookmark.verse),
+          verse: bookmark.verse,
           date_added: bookmark.dateAdded,
         });
     } catch (error) {
@@ -199,7 +229,7 @@ export class SupabaseService {
 
       return data.map(item => ({
         id: item.id,
-        verse: JSON.parse(item.verse),
+        verse: typeof item.verse === 'string' ? JSON.parse(item.verse) : item.verse,
         dateAdded: item.date_added,
       }));
     } catch (error) {
@@ -221,6 +251,48 @@ export class SupabaseService {
         .eq('user_id', userId);
     } catch (error) {
       console.error('Error deleting bookmark:', error);
+    }
+  }
+
+  static async registerUser(userId: string, metadata: any, settings: UserSettings): Promise<void> {
+    if (!userId) return;
+    const client = getSupabase();
+    if (!client) return;
+
+    try {
+      await client
+        .from(this.TABLE_SETTINGS)
+        .upsert({
+          user_id: userId,
+          username: settings.username || 'Guest',
+          email: settings.email || '',
+          last_active: metadata.lastActive,
+          user_agent: metadata.userAgent,
+          language: metadata.language,
+          is_installed: metadata.isInstalled,
+          platform: metadata.platform,
+          last_updated: new Date().toISOString()
+        });
+    } catch (error) {
+      console.error('Error registering user in Supabase:', error);
+    }
+  }
+
+  static async updateUserInstallStatus(userId: string, isInstalled: boolean): Promise<void> {
+    if (!userId) return;
+    const client = getSupabase();
+    if (!client) return;
+
+    try {
+      await client
+        .from(this.TABLE_SETTINGS)
+        .update({
+          is_installed: isInstalled,
+          last_updated: new Date().toISOString()
+        })
+        .eq('user_id', userId);
+    } catch (error) {
+      console.error('Error updating install status in Supabase:', error);
     }
   }
 }

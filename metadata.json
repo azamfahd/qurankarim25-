@@ -1,8 +1,5 @@
 {
   "name": "أنيس القلوب - رفيقك القرآني",
   "description": "مساعد قرآني ذكي يقدم آيات مناسبة لمشاعرك وتساؤلاتك باستخدام الذكاء الاصطناعي.",
-  "requestFramePermissions": [
-    "microphone",
-    "geolocation"
-  ]
+  "requestFramePermissions": []
 }

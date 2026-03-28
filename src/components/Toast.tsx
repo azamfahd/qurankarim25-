@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle, AlertCircle, Info, X } from 'lucide-react';
+import { CheckCircle, AlertCircle, Info, X, RefreshCw } from 'lucide-react';
 
-export type ToastType = 'success' | 'error' | 'info';
+export type ToastType = 'success' | 'error' | 'info' | 'reconnecting';
 
 interface ToastProps {
   message: string;
@@ -31,13 +31,15 @@ export const Toast: React.FC<ToastProps> = ({
   const icons = {
     success: <CheckCircle className="text-emerald-500" size={20} />,
     error: <AlertCircle className="text-red-500" size={20} />,
-    info: <Info className="text-blue-500" size={20} />
+    info: <Info className="text-blue-500" size={20} />,
+    reconnecting: <RefreshCw className="text-amber-500 animate-spin" size={20} />
   };
 
   const bgColors = {
     success: 'bg-emerald-50 border-emerald-100',
     error: 'bg-red-50 border-red-100',
-    info: 'bg-blue-50 border-blue-100'
+    info: 'bg-blue-50 border-blue-100',
+    reconnecting: 'bg-amber-50 border-amber-100'
   };
 
   return (

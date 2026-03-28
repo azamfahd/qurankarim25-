@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { X, User, Settings, Key, Sliders, Save, Shield, Sparkles, Headphones, ChevronDown, ExternalLink, LogIn, LogOut, Database } from 'lucide-react';
-import { UserSettings, GeminiModel, BackendType } from '../types';
+import { X, User, Settings, Key, Sliders, Save, Shield, Sparkles, Headphones, ChevronDown, ExternalLink, LogIn, LogOut, Database, RefreshCw, Cloud } from 'lucide-react';
+import { UserSettings, GeminiModel } from '../types';
 import { motion, AnimatePresence } from 'framer-motion';
-import { signInWithGoogle, logout } from '../firebase';
-import { getSupabase } from '../services/supabaseService';
+import { SupabaseService, getSupabase } from '../services/supabaseService';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -11,9 +10,19 @@ interface SettingsModalProps {
   settings: UserSettings;
   onSave: (settings: UserSettings) => void;
   onShowToast: (message: string, type?: 'success' | 'error' | 'info') => void;
+  isSyncing?: boolean;
+  lastSynced?: number | null;
 }
 
-export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, settings, onSave, onShowToast }) => {
+export const SettingsModal: React.FC<SettingsModalProps> = ({ 
+  isOpen, 
+  onClose, 
+  settings, 
+  onSave, 
+  onShowToast,
+  isSyncing,
+  lastSynced
+}) => {
   const [localSettings, setLocalSettings] = useState<UserSettings>({ ...settings });
 
   const handleSave = () => {
@@ -67,11 +76,18 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, s
             {/* Account Section */}
             <section className="bg-white rounded-3xl p-6 border border-[var(--color-border)] shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow">
               <div className="absolute top-0 right-0 w-2 h-full bg-[var(--color-primary)] opacity-20 group-hover:opacity-100 transition-opacity"></div>
-              <h3 className="text-sm font-bold text-gray-800 mb-5 flex items-center gap-3">
-                <div className="p-2 bg-[var(--color-primary-light)] text-[var(--color-primary)] rounded-xl shadow-sm">
-                  <User size={18} />
+              <h3 className="text-sm font-bold text-gray-800 mb-5 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-[var(--color-primary-light)] text-[var(--color-primary)] rounded-xl shadow-sm">
+                    <User size={18} />
+                  </div>
+                  الحساب والمزامنة
                 </div>
-                الحساب والمزامنة
+                {lastSynced && (
+                  <span className="text-[9px] text-gray-400 font-medium">
+                    آخر مزامنة: {new Date(lastSynced).toLocaleTimeString('ar-SA')}
+                  </span>
+                )}
               </h3>
               
               {localSettings.isLoggedIn ? (
@@ -89,19 +105,30 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, s
                       <p className="text-xs text-gray-500 truncate">{localSettings.email}</p>
                     </div>
                   </div>
-                  <button 
-                    onClick={async () => {
-                      try {
-                        await logout();
-                      } catch (err) {
-                        console.error(err);
-                      }
-                    }}
-                    className="w-full py-3 px-4 rounded-2xl border border-red-200 text-red-600 text-sm font-bold hover:bg-red-50 transition-all flex items-center justify-center gap-2"
-                  >
-                    <LogOut size={18} />
-                    تسجيل الخروج
-                  </button>
+                  
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={() => onSave(localSettings)}
+                      disabled={isSyncing}
+                      className="flex-1 py-2.5 px-4 rounded-2xl bg-[var(--color-primary-light)] text-[var(--color-primary)] text-xs font-bold hover:bg-[var(--color-primary)] hover:text-white transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                    >
+                      <RefreshCw size={14} className={isSyncing ? 'animate-spin' : ''} />
+                      {isSyncing ? 'جاري المزامنة...' : 'مزامنة الآن'}
+                    </button>
+                    <button 
+                      onClick={async () => {
+                        try {
+                          await SupabaseService.signOut();
+                        } catch (err) {
+                          console.error(err);
+                        }
+                      }}
+                      className="py-2.5 px-4 rounded-2xl border border-red-100 text-red-500 text-xs font-bold hover:bg-red-50 transition-all flex items-center justify-center gap-2"
+                    >
+                      <LogOut size={14} />
+                      خروج
+                    </button>
+                  </div>
                   <p className="text-[10px] text-center text-gray-400">بياناتك وإعداداتك تتم مزامنتها تلقائياً مع حسابك.</p>
                 </div>
               ) : (
@@ -110,7 +137,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, s
                   <button 
                     onClick={async () => {
                       try {
-                        await signInWithGoogle();
+                        await SupabaseService.signInWithGoogle();
                       } catch (err) {
                         console.error(err);
                       }
@@ -142,50 +169,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, s
                   </div>
                 </div>
               )}
-
-              {/* Backend Selection - Always Visible */}
-              <div className="mt-6 pt-5 border-t border-gray-100">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <Database size={14} className="text-gray-400" />
-                    <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">نظام المزامنة الأساسي</label>
-                  </div>
-                  {!getSupabase() && (
-                    <span className="text-[9px] text-amber-500 font-medium bg-amber-50 px-2 py-0.5 rounded-full border border-amber-100">بانتظار إعداد Supabase</span>
-                  )}
-                </div>
-                <div className="flex bg-gray-100 p-1.5 rounded-2xl">
-                  <button
-                    onClick={() => {
-                      if (!getSupabase()) {
-                        onShowToast("يرجى إعداد مفاتيح Supabase في إعدادات الأسرار (Secrets) أولاً لتفعيل الخيار الأساسي.", 'info');
-                        return;
-                      }
-                      setLocalSettings({ ...localSettings, preferredBackend: 'supabase' });
-                    }}
-                    className={`flex-1 py-2.5 text-[11px] font-bold rounded-xl transition-all ${
-                      (localSettings.preferredBackend === 'supabase' || (!localSettings.preferredBackend && getSupabase()))
-                        ? 'bg-white text-[var(--color-primary)] shadow-md'
-                        : 'text-gray-500 hover:text-gray-700'
-                    } ${!getSupabase() ? 'opacity-40 grayscale' : ''}`}
-                  >
-                    Supabase (الأساسي)
-                  </button>
-                  <button
-                    onClick={() => setLocalSettings({ ...localSettings, preferredBackend: 'firestore' })}
-                    className={`flex-1 py-2.5 text-[11px] font-bold rounded-xl transition-all ${
-                      (localSettings.preferredBackend === 'firestore' || (!localSettings.preferredBackend && !getSupabase()))
-                        ? 'bg-white text-[var(--color-primary)] shadow-md'
-                        : 'text-gray-500 hover:text-gray-700'
-                    }`}
-                  >
-                    Firestore (البديل)
-                  </button>
-                </div>
-                <p className="text-[9px] text-gray-400 mt-3 text-center leading-relaxed">
-                  تم تعيين Supabase كخيار أساسي للمزامنة، وسيتم استخدام Firestore كبديل تلقائي في حال عدم توفر الإعدادات.
-                </p>
-              </div>
             </section>
 
             {/* Profile Section */}
@@ -341,20 +324,27 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, s
           </div>
 
           {/* Footer */}
-          <div className="p-5 border-t border-[var(--color-border)] bg-gray-50/50 flex gap-3 shrink-0">
-            <button 
-              onClick={handleSave}
-              className="flex-1 bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-dark)] text-white py-3.5 rounded-2xl font-bold flex items-center justify-center gap-2 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all"
-            >
-              <Save size={18} />
-              حفظ التغييرات
-            </button>
-            <button 
-              onClick={onClose}
-              className="px-6 py-3.5 bg-white border border-[var(--color-border)] rounded-2xl font-medium text-gray-600 hover:bg-gray-50 hover:border-gray-300 active:scale-[0.98] transition-all"
-            >
-              إلغاء
-            </button>
+          <div className="p-5 border-t border-[var(--color-border)] bg-gray-50/50 flex flex-col gap-4 shrink-0">
+            <div className="flex gap-3">
+              <button 
+                onClick={handleSave}
+                className="flex-1 bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-dark)] text-white py-3.5 rounded-2xl font-bold flex items-center justify-center gap-2 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all"
+              >
+                <Save size={18} />
+                حفظ التغييرات
+              </button>
+              <button 
+                onClick={onClose}
+                className="px-6 py-3.5 bg-white border border-[var(--color-border)] rounded-2xl font-medium text-gray-600 hover:bg-gray-50 hover:border-gray-300 active:scale-[0.98] transition-all"
+              >
+                إلغاء
+              </button>
+            </div>
+            <div className="text-center">
+              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">
+                أنيس القلوب - الإصدار 1.1.0
+              </p>
+            </div>
           </div>
         </motion.div>
         </motion.div>

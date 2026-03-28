@@ -13,18 +13,23 @@ export const QiblaModal: React.FC<QiblaModalProps> = ({ isOpen, onClose }) => {
   const [rotation, setRotation] = useState(0);
 
   useEffect(() => {
-    if (isOpen && navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
+    if (isOpen) {
+      const fetchLocation = async () => {
+        try {
+          const response = await fetch('https://get.geojs.io/v1/ip/geo.json');
+          if (!response.ok) throw new Error('Network response was not ok');
+          const data = await response.json();
+          const latitude = parseFloat(data.latitude);
+          const longitude = parseFloat(data.longitude);
           const coords = new Coordinates(latitude, longitude);
           const direction = Qibla(coords);
           setQiblaDirection(direction);
-        },
-        (error) => {
+        } catch (error) {
           console.error("Geolocation error for Qibla:", error);
         }
-      );
+      };
+      
+      fetchLocation();
 
       // Listen for device orientation to rotate the compass
       const handleOrientation = (event: any) => {

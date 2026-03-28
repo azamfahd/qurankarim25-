@@ -130,8 +130,10 @@ export const BookmarksModal: React.FC<BookmarksModalProps> = ({
           title: 'أنيس القلوب - رفيقك القرآني',
           text: text,
         });
-      } catch (error) {
-        console.log('Error sharing', error);
+      } catch (error: any) {
+        if (error.name !== 'AbortError' && !error.message?.includes('canceled')) {
+          console.error('Error sharing:', error);
+        }
       }
     } else {
       navigator.clipboard.writeText(text);

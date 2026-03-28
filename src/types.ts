@@ -1,14 +1,16 @@
 export type GeminiModel = 'gemini-3.1-pro-preview' | 'gemini-3-flash-preview' | 'gemini-3.1-flash-lite-preview';
 
-export type BackendType = 'firebase' | 'supabase' | 'local' | 'firestore';
+export interface UserLocation {
+  latitude: number;
+  longitude: number;
+  name: string;
+}
 
 export interface UserSettings {
   theme?: 'light' | 'dark' | 'system';
   fontSize?: 'small' | 'medium' | 'large';
   geminiModel?: GeminiModel;
   model?: GeminiModel;
-  backendType?: BackendType;
-  preferredBackend?: BackendType;
   showTafsir?: boolean;
   showTranslation?: boolean;
   username?: string;
@@ -19,6 +21,7 @@ export interface UserSettings {
   apiKey?: string;
   bookmarks?: Bookmark[];
   isLoggedIn?: boolean;
+  location?: UserLocation;
 }
 
 export interface Verse {
